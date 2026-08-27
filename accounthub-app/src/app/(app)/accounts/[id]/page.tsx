@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { healthDotClass, stagePillClass } from "@/lib/ui";
-import { STAGES } from "@/lib/types";
+import { healthDotClass } from "@/lib/ui";
 import type { Account, Site, Contact, AccountNote, Doc } from "@/lib/types";
-import { addSite, addContact, addNote, uploadDoc, moveSiteStage } from "../actions";
+import { addSite, addContact, addNote, uploadDoc } from "../actions";
 import { DocLink } from "./doc-link";
+import { StageSelect } from "./stage-select";
 
 export default async function AccountDetailPage({
   params,
@@ -65,25 +65,7 @@ export default async function AccountDetailPage({
                   <div className="text-sm font-medium text-neutral-800">{s.name}</div>
                   <div className="text-xs text-neutral-400">{s.location}</div>
                 </div>
-                <form
-                  action={async (formData: FormData) => {
-                    "use server";
-                    await moveSiteStage(id, s.id, String(formData.get("stage")));
-                  }}
-                >
-                  <select
-                    name="stage"
-                    defaultValue={s.stage}
-                    className={`rounded-full px-2 py-1 text-xs font-medium ${stagePillClass(s.stage)}`}
-                    onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                  >
-                    {STAGES.map((st) => (
-                      <option key={st} value={st}>
-                        {st}
-                      </option>
-                    ))}
-                  </select>
-                </form>
+                <StageSelect accountId={id} siteId={s.id} stage={s.stage} />
               </div>
             ))}
             {siteList.length === 0 && (
