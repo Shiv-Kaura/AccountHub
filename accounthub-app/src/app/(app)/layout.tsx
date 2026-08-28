@@ -29,6 +29,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             >
               AM Pipeline
             </Link>
+            <Link
+              href="/sows"
+              className="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200/60"
+            >
+              SOW Generator
+            </Link>
+            <Link
+              href="/quotes"
+              className="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200/60"
+            >
+              Quote Generator
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-2">
