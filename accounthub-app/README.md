@@ -24,7 +24,9 @@ that up.
    `supabase/seed.sql` (the second one migrates your existing accounts/sites/contacts/notes/quotes/
    SOWs from the old artifact — skip it for a blank start).
 2. **Environment variables.** Copy `.env.local.example` to `.env.local` and fill in your project's
-   URL and anon key (Supabase dashboard → Project Settings → API).
+   URL and anon key (Supabase dashboard → Project Settings → API), plus an `ANTHROPIC_API_KEY`
+   from console.anthropic.com if you want the "Draft with Claude" button on the New SOW form to
+   work.
 3. **Install and run:**
    ```
    npm install

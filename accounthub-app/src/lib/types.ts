@@ -99,3 +99,9 @@ export type Sow = {
   contact_name: string;
   contact_email_phone: string;
 };
+
+export type SowDraft = {
+  projectTitle: string;
+  workSummary: string;
+  workDetails: string[];
+};
