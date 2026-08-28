@@ -32,7 +32,17 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             {q.exhibit_label && ` · Exhibit ${q.exhibit_label}`}
           </p>
         </div>
-        <DeleteQuoteButton id={q.id} />
+        <div className="flex items-center gap-2">
+          <a
+            href={`/quotes/${q.id}/export`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+          >
+            Export PDF
+          </a>
+          <DeleteQuoteButton id={q.id} />
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-6 text-sm">

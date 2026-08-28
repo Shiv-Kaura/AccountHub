@@ -25,8 +25,30 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
             {s.customer} · {s.sow_date} · {s.stage}
           </p>
         </div>
-        <DeleteSowButton id={s.id} />
+        <div className="flex items-center gap-2">
+          <a
+            href={`/sows/${s.id}/export`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+          >
+            Export PDF
+          </a>
+          <DeleteSowButton id={s.id} />
+        </div>
       </div>
+
+      {(s.contact_name || s.contact_email_phone) && (
+        <div className="mt-6 max-w-2xl">
+          <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+            Contact
+          </div>
+          <p className="mt-1 text-sm text-neutral-700">
+            {s.contact_name}
+            {s.contact_email_phone && <span className="text-neutral-500"> — {s.contact_email_phone}</span>}
+          </p>
+        </div>
+      )}
 
       <div className="mt-6 max-w-2xl">
         <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">

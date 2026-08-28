@@ -26,6 +26,8 @@ export async function createSow(formData: FormData) {
       work_details: workDetails,
       meeting_notes: String(formData.get("meetingNotes") || ""),
       solutions_diagram: formData.get("solutionsDiagram") === "on",
+      contact_name: String(formData.get("contactName") || ""),
+      contact_email_phone: String(formData.get("contactEmailPhone") || ""),
     })
     .select("id")
     .single();

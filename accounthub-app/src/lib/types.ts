@@ -96,4 +96,6 @@ export type Sow = {
   work_details: string[];
   solutions_diagram: boolean;
   meeting_notes: string;
+  contact_name: string;
+  contact_email_phone: string;
 };

@@ -3,10 +3,50 @@
 import { useMemo, useState } from "react";
 import { RATE_CARD, formatPrice, poRowFor, type PoRow } from "@/lib/rate-card";
 import { createQuote } from "../actions";
-import type { Account } from "@/lib/types";
+import type { Account, Contact } from "@/lib/types";
 
-export function QuoteForm({ accounts }: { accounts: Pick<Account, "id" | "name">[] }) {
+export type AccountWithContacts = Pick<Account, "id" | "name" | "contact"> & {
+  contacts: Pick<Contact, "id" | "name" | "role" | "email" | "phone">[];
+};
+
+function contactLabel(c: Pick<Contact, "name" | "role">) {
+  return c.role ? `${c.name} — ${c.role}` : c.name;
+}
+
+function contactEmailPhone(c: Pick<Contact, "email" | "phone">) {
+  return [c.email, c.phone].filter(Boolean).join(" / ");
+}
+
+export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
   const [selected, setSelected] = useState<Record<string, number>>({});
+  const [accountId, setAccountId] = useState("");
+  const [customer, setCustomer] = useState("");
+  const [synthesisContact, setSynthesisContact] = useState("Shiv Kaura");
+  const [synthesisEmailPhone, setSynthesisEmailPhone] = useState("");
+  const [customerContact, setCustomerContact] = useState("");
+  const [customerEmailPhone, setCustomerEmailPhone] = useState("");
+
+  const selectedAccount = accounts.find((a) => a.id === accountId) || null;
+
+  function handleAccountChange(id: string) {
+    setAccountId(id);
+    const acc = accounts.find((a) => a.id === id) || null;
+    if (acc) {
+      setCustomer(acc.name);
+      // If the account has exactly one saved contact, auto-fill it — otherwise leave the
+      // customer-contact fields for the picker below.
+      if (acc.contacts.length === 1) {
+        setCustomerContact(acc.contacts[0].name);
+        setCustomerEmailPhone(contactEmailPhone(acc.contacts[0]));
+      }
+    }
+  }
+
+  function handleCustomerContactPick(name: string) {
+    setCustomerContact(name);
+    const match = selectedAccount?.contacts.find((c) => c.name === name);
+    if (match) setCustomerEmailPhone(contactEmailPhone(match));
+  }
 
   const poRows: PoRow[] = useMemo(() => {
     return RATE_CARD.filter((item) => selected[item.key] > 0).map((item) =>
@@ -44,7 +84,12 @@ export function QuoteForm({ accounts }: { accounts: Pick<Account, "id" | "name">
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Account</label>
-          <select name="accountId" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm">
+          <select
+            name="accountId"
+            value={accountId}
+            onChange={(e) => handleAccountChange(e.target.value)}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          >
             <option value="">No account</option>
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
@@ -55,7 +100,15 @@ export function QuoteForm({ accounts }: { accounts: Pick<Account, "id" | "name">
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Customer name</label>
-          <input name="customer" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="customer"
+            value={customer}
+            onChange={(e) => setCustomer(e.target.value)}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
+          {selectedAccount && (
+            <span className="text-[11px] text-neutral-400">Auto-filled from {selectedAccount.name}</span>
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Exhibit label</label>
@@ -70,19 +123,56 @@ export function QuoteForm({ accounts }: { accounts: Pick<Account, "id" | "name">
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Synthesis contact</label>
-          <input name="synthesisContact" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="synthesisContact"
+            value={synthesisContact}
+            onChange={(e) => setSynthesisContact(e.target.value)}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Synthesis email / phone</label>
-          <input name="synthesisEmailPhone" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="synthesisEmailPhone"
+            value={synthesisEmailPhone}
+            onChange={(e) => setSynthesisEmailPhone(e.target.value)}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Customer contact</label>
-          <input name="customerContact" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="customerContact"
+            value={customerContact}
+            onChange={(e) => handleCustomerContactPick(e.target.value)}
+            list="quote-contact-dl"
+            autoComplete="off"
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
+          {selectedAccount && (
+            <datalist id="quote-contact-dl">
+              {selectedAccount.contacts.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {contactLabel(c)}
+                </option>
+              ))}
+            </datalist>
+          )}
+          {selectedAccount && selectedAccount.contacts.length > 0 && (
+            <span className="text-[11px] text-neutral-400">
+              Start typing to pick a saved contact from {selectedAccount.name} — email/phone fill in
+              automatically.
+            </span>
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Customer email / phone</label>
-          <input name="customerEmailPhone" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="customerEmailPhone"
+            value={customerEmailPhone}
+            onChange={(e) => setCustomerEmailPhone(e.target.value)}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
         </div>
       </div>
 

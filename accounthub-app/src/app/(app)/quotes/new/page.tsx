@@ -4,7 +4,10 @@ import { QuoteForm } from "./quote-form";
 
 export default async function NewQuotePage() {
   const supabase = await createClient();
-  const { data: accounts } = await supabase.from("accounts").select("id, name").order("name");
+  const { data: accounts } = await supabase
+    .from("accounts")
+    .select("id, name, contact, contacts(id, name, role, email, phone)")
+    .order("name");
 
   return (
     <div className="p-8">

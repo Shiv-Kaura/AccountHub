@@ -106,6 +106,8 @@ create table sows (
   work_details       jsonb not null default '[]',
   solutions_diagram  boolean not null default false,
   meeting_notes      text default '',
+  contact_name       text default '',
+  contact_email_phone text default '',
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
