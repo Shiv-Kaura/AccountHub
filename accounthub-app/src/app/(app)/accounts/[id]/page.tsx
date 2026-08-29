@@ -63,7 +63,7 @@ export default async function AccountDetailPage({
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Priority items */}
-        <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)] lg:col-span-2">
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:col-span-2">
           <h2 className="font-medium text-[#f2f2f4]">Priority items</h2>
           <div className="mt-3 flex flex-col gap-2">
             {itemList.map((it) => (
@@ -77,7 +77,7 @@ export default async function AccountDetailPage({
         </section>
 
         {/* Sites */}
-        <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <h2 className="font-medium text-[#f2f2f4]">Facilities / sites</h2>
           <div className="mt-3 flex flex-col gap-2">
             {siteList.map((s) => (
@@ -91,7 +91,7 @@ export default async function AccountDetailPage({
         </section>
 
         {/* Contacts */}
-        <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <h2 className="font-medium text-[#f2f2f4]">Contacts</h2>
           <div className="mt-3 flex flex-col gap-2">
             {contactList.map((c) => (
@@ -105,7 +105,7 @@ export default async function AccountDetailPage({
         </section>
 
         {/* Notes */}
-        <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <h2 className="font-medium text-[#f2f2f4]">Activity notes</h2>
           <AddNoteForm accountId={id} />
           <div className="mt-3 flex flex-col gap-2">
@@ -117,7 +117,7 @@ export default async function AccountDetailPage({
         </section>
 
         {/* Docs */}
-        <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <h2 className="font-medium text-[#f2f2f4]">Uploaded documents</h2>
           <div className="mt-3 flex flex-col gap-2">
             {docList.map((d) => (

@@ -6,6 +6,7 @@ import { updateSite, deleteSite, markSiteLost } from "../actions";
 import { showToast } from "@/lib/toast-client";
 import { StageSelect } from "./stage-select";
 import { LostToggle, LostBadge } from "../../lost-toggle";
+import { stageAccentHex } from "@/lib/ui";
 
 export function SiteRow({ accountId, site }: { accountId: string; site: Site }) {
   const [editing, setEditing] = useState(false);
@@ -14,7 +15,11 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
 
   if (!editing) {
     return (
-      <div className="flex items-center justify-between rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2">
+      <div className="relative flex items-center justify-between overflow-hidden rounded-md border border-white/[0.05] bg-white/[0.02] py-2 pl-4 pr-3">
+        <span
+          className="absolute inset-y-0 left-0 w-[3px]"
+          style={{ background: site.lost ? "#d81159" : stageAccentHex(site.stage) }}
+        />
         <div>
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium text-[#e5e6ea]">{site.name}</div>
@@ -94,7 +99,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-60"
+          className="rounded-md bg-[#0496ff] px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 active:brightness-90 active:scale-[0.98] transition disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>

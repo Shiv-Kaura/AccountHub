@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Sow } from "@/lib/types";
+import { stageAccentHex } from "@/lib/ui";
 import { GlassBanner, BannerActionLink } from "../glass-banner";
 
 export default async function SowsPage() {
@@ -29,11 +30,17 @@ export default async function SowsPage() {
             <Link
               key={s.id}
               href={`/sows/${s.id}`}
-              className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)] transition-shadow hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(4,150,255,0.14)]"
+              className={`relative overflow-hidden rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-4 pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-colors hover:bg-[#232326] ${s.lost ? "opacity-60" : ""}`}
             >
-              <div className="font-medium text-[#f2f2f4]">{s.project_title}</div>
+              <span
+                className="absolute inset-y-0 left-0 w-[3px]"
+                style={{ background: s.lost ? "#d81159" : stageAccentHex(s.stage) }}
+              />
+              <div className={`font-medium ${s.lost ? "text-[#b3b5bc] line-through decoration-[#d81159]/40" : "text-[#f2f2f4]"}`}>
+                {s.project_title}
+              </div>
               <div className="text-xs text-[#5a5d64]">
-                {s.customer} · {s.sow_date} · {s.stage}
+                {s.customer} · {s.sow_date} · {s.lost ? <span className="font-bold uppercase tracking-wide text-[#e8577f]">Lost</span> : s.stage}
               </div>
             </Link>
           ))}

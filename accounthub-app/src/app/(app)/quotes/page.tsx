@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Quote } from "@/lib/types";
 import { formatPrice } from "@/lib/rate-card";
+import { stageAccentHex } from "@/lib/ui";
 import { GlassBanner, BannerActionLink } from "../glass-banner";
 
 export default async function QuotesPage() {
@@ -35,12 +36,18 @@ export default async function QuotesPage() {
               <Link
                 key={q.id}
                 href={`/quotes/${q.id}`}
-                className="flex items-center justify-between rounded-[14px] border border-white/[0.06] bg-[#161618] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)] transition-shadow hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(4,150,255,0.14)]"
+                className={`relative flex items-center justify-between overflow-hidden rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-4 pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-colors hover:bg-[#232326] ${q.lost ? "opacity-60" : ""}`}
               >
+                <span
+                  className="absolute inset-y-0 left-0 w-[3px]"
+                  style={{ background: q.lost ? "#d81159" : stageAccentHex(q.stage) }}
+                />
                 <div>
-                  <div className="font-medium text-[#f2f2f4]">{q.name}</div>
+                  <div className={`font-medium ${q.lost ? "text-[#b3b5bc] line-through decoration-[#d81159]/40" : "text-[#f2f2f4]"}`}>
+                    {q.name}
+                  </div>
                   <div className="text-xs text-[#5a5d64]">
-                    {q.customer} · {q.quote_date} · {q.stage}
+                    {q.customer} · {q.quote_date} · {q.lost ? <span className="font-bold uppercase tracking-wide text-[#e8577f]">Lost</span> : q.stage}
                   </div>
                 </div>
                 <div className="text-sm font-medium text-[#c7c9d0]">

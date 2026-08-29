@@ -8,7 +8,11 @@
   nothing goes stale if anything still reads --brand directly.
 */
 :root {
-  --background: #0a0a0b;
+  /* True Elevation base — "avoid pure colors" (muz.li principle 1): not
+     pure black, so elevation reads as a lightness ladder from here up
+     (page #121212 -> cards #1c1c1e -> nested rows #232326 -> banner/
+     sidebar, which are glass instead of a fourth solid step). */
+  --background: #121212;
   --foreground: #eceef0;
   --brand: #0496ff;
   --brand-dark: #006ba6;
@@ -61,7 +65,7 @@ input[type="radio"] {
 }
 
 select option {
-  background-color: #161618;
+  background-color: #1c1c1e;
   color: #eceef0;
 }
 

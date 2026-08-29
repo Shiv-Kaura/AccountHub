@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { healthDotClass, isOverdue } from "@/lib/ui";
+import { healthDotClass, healthAccentHex, isOverdue } from "@/lib/ui";
 import type { Account, Item, AccountNote, Quote, Sow, Doc, Contact, Site } from "@/lib/types";
 import { GlassBanner } from "./glass-banner";
 
@@ -107,9 +107,9 @@ export default async function DashboardPage() {
             <Link
               key={s.label}
               href={s.href}
-              className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)] transition-shadow hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(4,150,255,0.14)]"
+              className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-colors hover:bg-[#232326]"
             >
-              <div className="text-2xl font-semibold text-[#4fc3ff] [text-shadow:0_0_16px_rgba(4,150,255,0.4)]">
+              <div className="text-2xl font-semibold text-[#eceef0]">
                 {s.value}
               </div>
               <div className="mt-1 text-xs text-[#8c8f96]">{s.label}</div>
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+          <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
             <h2 className="text-[13.5px] font-semibold text-[#f2f2f4]">Needs attention</h2>
 
             {flagged.length > 0 && (
@@ -131,8 +131,12 @@ export default async function DashboardPage() {
                     <Link
                       key={a.id}
                       href={`/accounts/${a.id}`}
-                      className="flex items-center gap-2 rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                      className="relative flex items-center gap-2 overflow-hidden rounded-md border border-white/[0.05] bg-white/[0.02] py-2 pl-4 pr-3 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
                     >
+                      <span
+                        className="absolute inset-y-0 left-0 w-[3px]"
+                        style={{ background: healthAccentHex(a.health) }}
+                      />
                       <span className={`h-2.5 w-2.5 rounded-full ${healthDotClass(a.health)}`} />
                       {a.name}
                     </Link>
@@ -151,8 +155,9 @@ export default async function DashboardPage() {
                     <Link
                       key={it.id}
                       href={`/accounts/${it.account_id}`}
-                      className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                      className="relative overflow-hidden rounded-md border border-white/[0.05] bg-white/[0.02] py-2 pl-4 pr-3 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
                     >
+                      <span className="absolute inset-y-0 left-0 w-[3px] bg-[#d81159]" />
                       <div className="font-medium text-[#e5e6ea]">{it.title}</div>
                       <div className="text-xs text-[#ff5c8a]">
                         due {it.due_date} · {accountById.get(it.account_id)?.name ?? ""}
@@ -168,14 +173,14 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <section className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+          <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
             <h2 className="text-[13.5px] font-semibold text-[#f2f2f4]">Recent activity</h2>
             <div className="mt-3 flex flex-col gap-2">
               {activity.map((a, i) => (
                 <Link
                   key={i}
                   href={a.href}
-                  className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                  className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
                 >
                   <div className="font-medium text-[#e5e6ea]">{a.label}</div>
                   <div className="truncate text-xs text-[#8c8f96]">{a.detail}</div>

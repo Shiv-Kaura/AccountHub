@@ -179,14 +179,14 @@ export function SowForm({ accounts, sow }: { accounts: AccountWithContacts[]; so
           onChange={(e) => setDraftInput(e.target.value)}
           rows={2}
           placeholder="e.g. New HL7 interface with 6Radiology at their new facility"
-          className="rounded-md border border-white/[0.12] bg-[#161618] px-3 py-1.5 text-sm"
+          className="rounded-md border border-white/[0.12] bg-[#1c1c1e] px-3 py-1.5 text-sm"
         />
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={handleDraft}
             disabled={isDrafting || !draftInput.trim()}
-            className="self-start rounded-md bg-gradient-to-b from-[#b0447a] to-[#8f2d56] px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
+            className="self-start rounded-md bg-gradient-to-b from-[#b0447a] to-[#8f2d56] px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 active:brightness-90 active:scale-[0.98] transition disabled:opacity-50"
           >
             {isDrafting ? "Drafting…" : "Draft Work Summary & Details"}
           </button>
@@ -232,7 +232,7 @@ export function SowForm({ accounts, sow }: { accounts: AccountWithContacts[]; so
 
       <button
         type="submit"
-        className="self-start rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+        className="self-start rounded-md bg-[#0496ff] px-4 py-2 text-sm font-medium text-white hover:brightness-110 active:brightness-90 active:scale-[0.98] transition"
       >
         {isEdit ? "Save changes" : "Create SOW"}
       </button>

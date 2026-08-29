@@ -275,7 +275,7 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
 
       <button
         type="submit"
-        className="self-start rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+        className="self-start rounded-md bg-[#0496ff] px-4 py-2 text-sm font-medium text-white hover:brightness-110 active:brightness-90 active:scale-[0.98] transition"
       >
         {isEdit ? "Save changes" : "Create quote"}
       </button>

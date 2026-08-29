@@ -56,3 +56,43 @@ export function stagePillClass(stage: string) {
       return "bg-white/[0.06] text-[#aeb1b8] ring-1 ring-white/[0.08]";
   }
 }
+
+/**
+ * True Elevation's slim left accent bar, one hex per stage — the exact
+ * same mapping stagePillClass already uses, just rendered as a 3px bar
+ * instead of a pill. Keeping ONE function as the source of truth for
+ * "what color means what stage" is what keeps color from turning into
+ * noise as it shows up in more places (cards, list rows, pills): a
+ * color only ever means the one thing it's assigned here, app-wide.
+ */
+export function stageAccentHex(stage: string): string {
+  switch (stage) {
+    case "Live":
+      return "#1fae7a"; // meadow-green — live/success
+    case "Signed":
+    case "Assigned to PM/Work Session Scheduled":
+      return "#0496ff"; // dodger-blue — reserved for brand/primary/nav/Signed
+    case "SOW & Quote Sent":
+      return "#ffbc42"; // sunflower-gold — pending / awaiting a response
+    default:
+      return "#5b5d64"; // neutral — Prospect / no status yet
+  }
+}
+
+/** Same idea as stageAccentHex, for the account health traffic-light. */
+export function healthAccentHex(health: string): string {
+  switch (health) {
+    case "green":
+      return "#1fae7a";
+    case "yellow":
+      return "#ffbc42";
+    case "red":
+      return "#d81159"; // raspberry-red — reserved for lost/danger
+    default:
+      return "#5b5d64";
+  }
+}
+
+// Owner-avatar color (identity, not status) already lives in
+// lib/owner-avatar.ts (ownerGradient/ownerInitials) — reuse that
+// instead of a second color-per-owner scheme here.

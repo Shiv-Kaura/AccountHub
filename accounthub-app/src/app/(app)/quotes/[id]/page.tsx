@@ -55,7 +55,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             href={`/quotes/${q.id}/export`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-sm font-medium text-white hover:brightness-110"
+            className="rounded-md bg-[#0496ff] px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 active:brightness-90 active:scale-[0.98] transition"
           >
             Export PDF
           </a>
@@ -63,7 +63,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         </div>
       </div>
 
-      <div className="mt-6 rounded-[14px] border border-white/[0.06] bg-[#161618] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+      <div className="mt-6 rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
         <div className="grid grid-cols-2 gap-6 text-sm">
           <div>
             <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">

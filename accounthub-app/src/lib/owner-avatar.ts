@@ -7,11 +7,11 @@
 // fine — the point is reps sharing a board can tell each other apart, not
 // that every possible owner gets a unique hue forever.
 
-export type OwnerGradient = { from: string; to: string; glow: string };
+export type OwnerGradient = { from: string; to: string };
 
 const GRADIENTS: OwnerGradient[] = [
-  { from: "#0496ff", to: "#006ba6", glow: "rgba(4,150,255,0.45)" }, // dodger-blue -> cornflower-ocean
-  { from: "#b0447a", to: "#8f2d56", glow: "rgba(143,45,86,0.45)" }, // lighter -> vintage-berry (no raspberry — that stays Lost-only)
+  { from: "#0496ff", to: "#006ba6" }, // dodger-blue -> cornflower-ocean
+  { from: "#b0447a", to: "#8f2d56" }, // lighter -> vintage-berry (no raspberry — that stays Lost-only)
 ];
 
 function hashString(s: string): number {

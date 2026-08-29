@@ -252,9 +252,9 @@ export default async function PipelinePage({
               defaultValue={sp.segment ?? "all"}
               className="bg-transparent text-xs text-[#c7c9d0] focus:outline-none"
             >
-              <option className="bg-[#161618]" value="all">Segment: All</option>
-              <option className="bg-[#161618]" value="managed">Managed</option>
-              <option className="bg-[#161618]" value="prospect">Prospect</option>
+              <option className="bg-[#1c1c1e]" value="all">Segment: All</option>
+              <option className="bg-[#1c1c1e]" value="managed">Managed</option>
+              <option className="bg-[#1c1c1e]" value="prospect">Prospect</option>
             </select>
           </div>
           <div className="rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-xs text-[#c7c9d0] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
@@ -265,9 +265,9 @@ export default async function PipelinePage({
               defaultValue={sp.owner ?? "all"}
               className="bg-transparent text-xs text-[#c7c9d0] focus:outline-none"
             >
-              <option className="bg-[#161618]" value="all">Owner: All</option>
+              <option className="bg-[#1c1c1e]" value="all">Owner: All</option>
               {owners.map((o) => (
-                <option className="bg-[#161618]" key={o} value={o}>
+                <option className="bg-[#1c1c1e]" key={o} value={o}>
                   {o}
                 </option>
               ))}
@@ -285,7 +285,7 @@ export default async function PipelinePage({
           </label>
           <button
             type="submit"
-            className="rounded-lg bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(4,150,255,0.4)]"
+            className="rounded-lg bg-[#0496ff] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition hover:brightness-110 active:brightness-90 active:scale-[0.98]"
           >
             Apply filters
           </button>
@@ -333,7 +333,7 @@ export default async function PipelinePage({
                 {stageCards.map((c) => (
                   <div
                     key={c.id}
-                    className={`group relative rounded-[14px] border border-white/[0.06] bg-[#161618] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.045),0_1px_2px_rgba(0,0,0,0.3),0_8px_20px_rgba(0,0,0,0.22)] outline outline-[1.5px] outline-offset-[-1.5px] outline-transparent transition-[box-shadow,outline-color] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.3),0_10px_26px_rgba(4,150,255,0.16)] hover:outline-[rgba(4,150,255,0.38)] ${c.lost ? "opacity-60" : ""}`}
+                    className={`group relative rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.045)] transition-colors hover:bg-[#232326] ${c.lost ? "opacity-60" : ""}`}
                   >
                     <button
                       type="button"
@@ -377,7 +377,6 @@ export default async function PipelinePage({
                           className="flex h-[19px] w-[19px] items-center justify-center rounded-full text-[8.5px] font-bold text-white"
                           style={{
                             background: `linear-gradient(180deg, ${ownerGradient(c.ownerName).from}, ${ownerGradient(c.ownerName).to})`,
-                            boxShadow: `0 1px 4px ${ownerGradient(c.ownerName).glow}`,
                           }}
                         >
                           {ownerInitials(c.ownerName)}

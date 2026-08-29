@@ -2,7 +2,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
 import { Toaster } from "./toaster";
-import { AmbientGlow } from "./ambient-glow";
 import { NavLinks } from "./nav-links";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,13 +12,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="relative flex min-h-screen">
-      {/* Approved "G — Layered Glow, final pass" background system — one instance, site-wide */}
-      <AmbientGlow />
-
-      <aside className="relative z-10 flex w-56 shrink-0 flex-col justify-between border-r border-white/[0.07] bg-white/[0.03] p-5">
+      {/*
+        True Elevation, combined with the restrained-glass pass: no ambient
+        glow/blob wash behind the app (that read as a step back toward the
+        old glow system — muz.li principle 4, "the glow/bloom halos are
+        gone"). The sidebar is the one glass surface outside the banner —
+        translucent + blurred so it still reads as glass against whatever
+        scrolls under it, without needing a colored blob to justify it.
+      */}
+      <aside className="relative z-10 flex w-56 shrink-0 flex-col justify-between border-r border-white/[0.06] bg-white/[0.03] p-5 backdrop-blur-2xl backdrop-saturate-[140%]">
         <div>
           <Link href="/">
-            <div className="text-base font-semibold text-[#4fc3ff] [text-shadow:0_0_16px_rgba(79,195,255,0.35)]">
+            <div className="text-base font-semibold text-[#4fc3ff]">
               AccountHub
             </div>
             <div className="mt-0.5 text-[11px] uppercase tracking-wide text-[#5a5d64]">

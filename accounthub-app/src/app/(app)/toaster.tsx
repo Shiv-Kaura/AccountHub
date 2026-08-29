@@ -35,7 +35,7 @@ export function Toaster() {
         <div
           key={t.id}
           className={`rounded-md px-4 py-2 text-sm font-medium text-white shadow-lg ${
-            t.variant === "error" ? "bg-[#d81159]" : "bg-gradient-to-b from-[#0496ff] to-[#006ba6]"
+            t.variant === "error" ? "bg-[#d81159]" : "bg-[#0496ff]"
           }`}
         >
           {t.message}

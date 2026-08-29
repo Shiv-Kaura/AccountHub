@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { healthDotClass } from "@/lib/ui";
+import { healthDotClass, healthAccentHex } from "@/lib/ui";
 import { createAccount } from "./actions";
 import type { Account } from "@/lib/types";
 import { GlassBanner } from "../glass-banner";
@@ -26,7 +26,7 @@ export default async function AccountsPage() {
           </div>
         </div>
 
-        <form action={createAccount} className="mt-6 flex items-end gap-2 rounded-[14px] border border-white/[0.06] bg-[#161618] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)]">
+        <form action={createAccount} className="mt-6 flex items-end gap-2 rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-[#aeb1b8]">New account name</label>
             <input
@@ -56,7 +56,7 @@ export default async function AccountsPage() {
           </div>
           <button
             type="submit"
-            className="rounded-lg bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3.5 py-1.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(4,150,255,0.4)]"
+            className="rounded-lg bg-[#0496ff] px-3.5 py-1.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition hover:brightness-110 active:brightness-90 active:scale-[0.98]"
           >
             + New account/group
           </button>
@@ -69,8 +69,12 @@ export default async function AccountsPage() {
             <Link
               key={a.id}
               href={`/accounts/${a.id}`}
-              className="rounded-[14px] border border-white/[0.06] bg-[#161618] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(0,0,0,0.22)] transition-shadow hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_6px_rgba(0,0,0,0.3),0_10px_24px_rgba(4,150,255,0.14)]"
+              className="relative overflow-hidden rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-4 pl-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-colors hover:bg-[#232326]"
             >
+              <span
+                className="absolute inset-y-0 left-0 w-[3px]"
+                style={{ background: healthAccentHex(a.health) }}
+              />
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-[11px] uppercase tracking-wide text-[#5a5d64]">

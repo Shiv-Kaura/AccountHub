@@ -57,7 +57,7 @@ export default async function SearchPage({
               <Link
                 key={a.id}
                 href={`/accounts/${a.id}`}
-                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
               >
                 {a.name}
               </Link>
@@ -74,7 +74,7 @@ export default async function SearchPage({
               <Link
                 key={c.id}
                 href={`/accounts/${c.account_id}`}
-                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
               >
                 <div className="font-medium text-[#e5e6ea]">{c.name}</div>
                 <div className="text-xs text-[#5a5d64]">{[c.email, c.phone].filter(Boolean).join(" · ")}</div>
@@ -92,7 +92,7 @@ export default async function SearchPage({
               <Link
                 key={qt.id}
                 href={`/quotes/${qt.id}`}
-                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
               >
                 <div className="font-medium text-[#e5e6ea]">{qt.name}</div>
                 <div className="text-xs text-[#5a5d64]">{qt.customer}</div>
@@ -110,7 +110,7 @@ export default async function SearchPage({
               <Link
                 key={s.id}
                 href={`/sows/${s.id}`}
-                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm hover:border-white/[0.12]"
+                className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm transition-colors hover:bg-white/[0.045] hover:border-white/[0.10]"
               >
                 <div className="font-medium text-[#e5e6ea]">{s.project_title}</div>
                 <div className="text-xs text-[#5a5d64]">{s.customer}</div>

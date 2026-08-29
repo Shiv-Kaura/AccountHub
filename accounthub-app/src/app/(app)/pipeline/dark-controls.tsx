@@ -52,7 +52,7 @@ export function DarkPipelineArrows({
         disabled={pending || !next}
         onClick={() => move(next)}
         title={next ? `Move forward to ${next}` : "Already at the last stage"}
-        className="group flex h-[23px] w-[23px] items-center justify-center rounded-[7px] bg-white/[0.06] text-[#c7c9d0] transition-all hover:bg-gradient-to-b hover:from-[#0496ff] hover:to-[#006ba6] hover:text-white hover:shadow-[0_2px_8px_rgba(4,150,255,0.5)] disabled:cursor-not-allowed disabled:opacity-40"
+        className="group flex h-[23px] w-[23px] items-center justify-center rounded-[7px] bg-white/[0.06] text-[#c7c9d0] transition-colors hover:bg-[#0496ff] hover:text-white active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRightIcon />
       </button>

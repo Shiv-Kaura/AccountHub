@@ -20,10 +20,9 @@ export function GlassBanner({
   showSearch?: boolean;
 }) {
   return (
-    <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[rgba(20,20,22,0.62)] px-7 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_10px_28px_rgba(0,0,0,0.35)] backdrop-blur-[22px] backdrop-saturate-[140%]">
+    <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] bg-[rgba(28,28,31,0.45)] px-7 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.09)] backdrop-blur-[28px] backdrop-saturate-[150%]">
       <div className="flex items-center gap-3">
-        <span className="text-[15px]">🚀</span>
-        <span className="text-[13px] font-semibold tracking-tight text-[#f2f2f4]">AccountHub</span>
+        <span className="text-[13px] font-semibold tracking-tight text-[#eceef0]">AccountHub</span>
         <span className="h-3.5 w-px bg-white/10" />
         <span className="text-[13px] text-[#8c8f96]">
           {crumb ? (
@@ -56,12 +55,12 @@ export function GlassBanner({
   );
 }
 
-/** Consistent primary "glow" action button for banners (New account, New quote, etc). */
+/** Consistent primary action button for banners (New account, New quote, etc) — flat brand blue, no glow, real hover/press feedback. */
 export function BannerActionLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
       href={href}
-      className="rounded-lg bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(4,150,255,0.4)]"
+      className="rounded-lg bg-[#0496ff] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition hover:brightness-110 active:brightness-90 active:scale-[0.98]"
     >
       {children}
     </Link>
