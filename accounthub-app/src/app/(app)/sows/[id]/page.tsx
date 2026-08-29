@@ -38,7 +38,7 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
             href={`/sows/${s.id}/export`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+            className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2d1650]"
           >
             Export PDF
           </a>

@@ -5,6 +5,7 @@ import type { Item } from "@/lib/types";
 import { ITEM_STATUSES, ITEM_STATUS_LABEL } from "@/lib/types";
 import { itemStatusPillClass, isOverdue } from "@/lib/ui";
 import { updateItem, deleteItem, setItemStatus } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function ItemRow({ accountId, item }: { accountId: string; item: Item }) {
   const [editing, setEditing] = useState(false);
@@ -24,6 +25,7 @@ export function ItemRow({ accountId, item }: { accountId: string; item: Item }) 
                 startTransition(async () => {
                   try {
                     await setItemStatus(accountId, item.id, e.target.value);
+                    showToast("Status updated");
                   } catch (err) {
                     setError(err instanceof Error ? err.message : "Couldn't update");
                   }
@@ -72,6 +74,7 @@ export function ItemRow({ accountId, item }: { accountId: string; item: Item }) 
               startTransition(async () => {
                 try {
                   await deleteItem(accountId, item.id);
+                  showToast(`Deleted "${item.title}"`);
                 } catch (e) {
                   setError(e instanceof Error ? e.message : "Couldn't delete");
                 }
@@ -94,6 +97,7 @@ export function ItemRow({ accountId, item }: { accountId: string; item: Item }) 
           try {
             await updateItem(accountId, item.id, formData);
             setEditing(false);
+            showToast("Item saved");
           } catch (e) {
             setError(e instanceof Error ? e.message : "Couldn't save");
           }
@@ -149,7 +153,7 @@ export function ItemRow({ accountId, item }: { accountId: string; item: Item }) 
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-60"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>

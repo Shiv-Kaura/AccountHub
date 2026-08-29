@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import type { AccountNote } from "@/lib/types";
 import { updateNote, deleteNote } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function NoteRow({ accountId, note }: { accountId: string; note: AccountNote }) {
   const [editing, setEditing] = useState(false);
@@ -31,6 +32,7 @@ export function NoteRow({ accountId, note }: { accountId: string; note: AccountN
                 startTransition(async () => {
                   try {
                     await deleteNote(accountId, note.id);
+                    showToast("Note deleted");
                   } catch (e) {
                     setError(e instanceof Error ? e.message : "Couldn't delete");
                   }
@@ -56,6 +58,7 @@ export function NoteRow({ accountId, note }: { accountId: string; note: AccountN
           try {
             await updateNote(accountId, note.id, formData);
             setEditing(false);
+            showToast("Note saved");
           } catch (e) {
             setError(e instanceof Error ? e.message : "Couldn't save");
           }
@@ -74,7 +77,7 @@ export function NoteRow({ accountId, note }: { accountId: string; note: AccountN
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-60"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>

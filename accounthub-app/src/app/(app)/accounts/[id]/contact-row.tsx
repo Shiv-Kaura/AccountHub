@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import type { Contact } from "@/lib/types";
 import { updateContact, deleteContact } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function ContactRow({ accountId, contact }: { accountId: string; contact: Contact }) {
   const [editing, setEditing] = useState(false);
@@ -39,6 +40,7 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
               startTransition(async () => {
                 try {
                   await deleteContact(accountId, contact.id);
+                  showToast(`Removed ${contact.name}`);
                 } catch (e) {
                   setError(e instanceof Error ? e.message : "Couldn't delete");
                 }
@@ -61,6 +63,7 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
           try {
             await updateContact(accountId, contact.id, formData);
             setEditing(false);
+            showToast("Contact saved");
           } catch (e) {
             setError(e instanceof Error ? e.message : "Couldn't save");
           }
@@ -97,7 +100,7 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-60"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>

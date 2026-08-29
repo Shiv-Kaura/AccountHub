@@ -29,7 +29,7 @@ export default async function AccountsPage() {
             name="name"
             required
             placeholder="e.g. Legacy Radiology Partners"
-            className="w-72 rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
+            className="w-72 rounded-md border border-neutral-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#5b3a99]"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -44,7 +44,7 @@ export default async function AccountsPage() {
         </div>
         <button
           type="submit"
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2d1650]"
         >
           + New account/group
         </button>

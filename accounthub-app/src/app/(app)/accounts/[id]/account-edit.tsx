@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import type { Account } from "@/lib/types";
 import { healthDotClass } from "@/lib/ui";
 import { updateAccount } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function AccountHeader({ account }: { account: Account }) {
   const [editing, setEditing] = useState(false);
@@ -38,6 +39,7 @@ export function AccountHeader({ account }: { account: Account }) {
           try {
             await updateAccount(account.id, formData);
             setEditing(false);
+            showToast("Account saved");
           } catch (e) {
             setError(e instanceof Error ? e.message : "Couldn't save");
           }
@@ -71,7 +73,7 @@ export function AccountHeader({ account }: { account: Account }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-60"
+        className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
       >
         {pending ? "Saving…" : "Save"}
       </button>

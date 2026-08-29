@@ -2,13 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Account, Site, Contact, AccountNote, Doc, Item } from "@/lib/types";
-import { addSite, addContact, addNote, uploadDoc, addItem } from "../actions";
+import { uploadDoc } from "../actions";
 import { DocLink } from "./doc-link";
 import { AccountHeader } from "./account-edit";
 import { SiteRow } from "./site-row";
 import { ContactRow } from "./contact-row";
 import { NoteRow } from "./note-row";
 import { ItemRow } from "./item-row";
+import { AddSiteForm } from "./add-site-form";
+import { AddContactForm } from "./add-contact-form";
+import { AddNoteForm } from "./add-note-form";
+import { AddItemForm } from "./add-item-form";
 
 export default async function AccountDetailPage({
   params,
@@ -42,11 +46,7 @@ export default async function AccountDetailPage({
   const docList = (docs ?? []) as Doc[];
   const itemList = (items ?? []) as Item[];
 
-  const addSiteWithId = addSite.bind(null, id);
-  const addContactWithId = addContact.bind(null, id);
-  const addNoteWithId = addNote.bind(null, id);
   const uploadDocWithId = uploadDoc.bind(null, id);
-  const addItemWithId = addItem.bind(null, id);
 
   return (
     <div className="p-8">
@@ -68,38 +68,7 @@ export default async function AccountDetailPage({
               <p className="text-sm text-neutral-400">Nothing tracked yet — this account is quiet.</p>
             )}
           </div>
-          <form action={addItemWithId} className="mt-4 flex flex-wrap items-end gap-2">
-            <div className="flex flex-1 min-w-[180px] flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-600">What needs attention</label>
-              <input
-                name="title"
-                required
-                placeholder="e.g. Awaiting signed BAA"
-                className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-600">Owner</label>
-              <input name="owner" className="w-28 rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-600">Due</label>
-              <input name="dueDate" type="date" className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-600">Zendesk #</label>
-              <input name="zendesk" className="w-24 rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
-            </div>
-            <label className="flex items-center gap-1 pb-2 text-xs text-neutral-600">
-              <input type="checkbox" name="priority" /> High
-            </label>
-            <button
-              type="submit"
-              className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
-            >
-              + Add
-            </button>
-          </form>
+          <AddItemForm accountId={id} />
         </section>
 
         {/* Sites */}
@@ -113,25 +82,7 @@ export default async function AccountDetailPage({
               <p className="text-sm text-neutral-400">No facilities yet.</p>
             )}
           </div>
-          <form action={addSiteWithId} className="mt-4 flex gap-2">
-            <input
-              name="name"
-              placeholder="Facility name"
-              required
-              className="flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <input
-              name="location"
-              placeholder="City, State"
-              className="w-32 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <button
-              type="submit"
-              className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
-            >
-              + Add
-            </button>
-          </form>
+          <AddSiteForm accountId={id} />
         </section>
 
         {/* Contacts */}
@@ -145,49 +96,13 @@ export default async function AccountDetailPage({
               <p className="text-sm text-neutral-400">No contacts yet.</p>
             )}
           </div>
-          <form action={addContactWithId} className="mt-4 grid grid-cols-2 gap-2">
-            <input
-              name="name"
-              placeholder="Full name"
-              required
-              className="col-span-2 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <input
-              name="email"
-              placeholder="Email"
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <input
-              name="phone"
-              placeholder="Phone"
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <button
-              type="submit"
-              className="col-span-2 rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
-            >
-              + Add contact
-            </button>
-          </form>
+          <AddContactForm accountId={id} />
         </section>
 
         {/* Notes */}
         <section className="rounded-lg border border-neutral-200 p-5">
           <h2 className="font-medium text-neutral-900">Activity notes</h2>
-          <form action={addNoteWithId} className="mt-3 flex gap-2">
-            <textarea
-              name="body"
-              placeholder="What happened, what's next…"
-              required
-              className="flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-            />
-            <button
-              type="submit"
-              className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
-            >
-              Add
-            </button>
-          </form>
+          <AddNoteForm accountId={id} />
           <div className="mt-3 flex flex-col gap-2">
             {noteList.map((n) => (
               <NoteRow key={n.id} accountId={id} note={n} />

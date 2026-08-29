@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { STAGES, type Stage } from "@/lib/types";
 import { stagePillClass } from "@/lib/ui";
 import { moveSiteStage } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function StageSelect({
   accountId,
@@ -23,7 +24,7 @@ export function StageSelect({
       onChange={(e) => {
         const next = e.target.value;
         startTransition(() => {
-          moveSiteStage(accountId, siteId, next);
+          moveSiteStage(accountId, siteId, next).then(() => showToast(`Moved to ${next}`));
         });
       }}
       className={`rounded-full px-2 py-1 text-xs font-medium ${stagePillClass(stage)} disabled:opacity-60`}

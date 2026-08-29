@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { STAGES, type Stage } from "@/lib/types";
 import { stagePillClass } from "@/lib/ui";
 import { updateSowStage } from "../actions";
+import { showToast } from "@/lib/toast-client";
 
 export function SowStageSelect({ id, stage }: { id: string; stage: Stage }) {
   const [pending, startTransition] = useTransition();
@@ -15,7 +16,7 @@ export function SowStageSelect({ id, stage }: { id: string; stage: Stage }) {
       onChange={(e) => {
         const next = e.target.value;
         startTransition(() => {
-          updateSowStage(id, next);
+          updateSowStage(id, next).then(() => showToast(`Moved to ${next}`));
         });
       }}
       className={`rounded-full px-2 py-1 text-xs font-medium ${stagePillClass(stage)} disabled:opacity-60`}

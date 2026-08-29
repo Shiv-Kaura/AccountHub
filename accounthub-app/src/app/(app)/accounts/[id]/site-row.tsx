@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import type { Site } from "@/lib/types";
 import { updateSite, deleteSite } from "../actions";
+import { showToast } from "@/lib/toast-client";
 import { StageSelect } from "./stage-select";
 
 export function SiteRow({ accountId, site }: { accountId: string; site: Site }) {
@@ -36,6 +37,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
               startTransition(async () => {
                 try {
                   await deleteSite(accountId, site.id);
+                  showToast(`Removed ${site.name}`);
                 } catch (e) {
                   setError(e instanceof Error ? e.message : "Couldn't delete");
                 }
@@ -58,6 +60,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
           try {
             await updateSite(accountId, site.id, formData);
             setEditing(false);
+            showToast("Facility saved");
           } catch (e) {
             setError(e instanceof Error ? e.message : "Couldn't save");
           }
@@ -82,7 +85,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800 disabled:opacity-60"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>

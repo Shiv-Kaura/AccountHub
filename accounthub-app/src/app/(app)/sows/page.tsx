@@ -20,7 +20,7 @@ export default async function SowsPage() {
         </div>
         <Link
           href="/sows/new"
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2d1650]"
         >
           + New SOW
         </Link>
