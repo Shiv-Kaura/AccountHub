@@ -10,7 +10,7 @@ export type Stage = (typeof STAGES)[number];
 export const CONTACT_ROLE_TAGS = ["Admin", "IT", "Rad champion", "Account holder"] as const;
 
 export type Health = "green" | "yellow" | "red";
-export type Segment = "managed" | "deal";
+export type Segment = "managed" | "prospect";
 
 export type Account = {
   id: string;
@@ -19,6 +19,7 @@ export type Account = {
   health: Health;
   contact: string;
   owner_id: string | null;
+  owner_name: string;
   created_at: string;
   updated_at: string;
 };
@@ -32,6 +33,7 @@ export type Site = {
   target_date: string | null;
   owner: string;
   notes: string;
+  lost: boolean;
 };
 
 export type Contact = {
@@ -81,6 +83,7 @@ export type Quote = {
   implementation_items: string[];
   rate_sel: Record<string, { checked: boolean; qty: number }>;
   po_rows: { qty: string; item: string; price: string; dueDate: string; source: string }[];
+  lost: boolean;
 };
 
 export type Sow = {
@@ -98,6 +101,7 @@ export type Sow = {
   meeting_notes: string;
   contact_name: string;
   contact_email_phone: string;
+  lost: boolean;
 };
 
 export type SowDraft = {

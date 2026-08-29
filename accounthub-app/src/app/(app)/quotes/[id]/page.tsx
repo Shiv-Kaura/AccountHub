@@ -5,6 +5,8 @@ import type { Quote } from "@/lib/types";
 import { formatPrice } from "@/lib/rate-card";
 import { DeleteQuoteButton } from "./delete-button";
 import { QuoteStageSelect } from "./quote-stage-select";
+import { markQuoteLost } from "../actions";
+import { LostToggle, LostBadge } from "../../lost-toggle";
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,11 +29,15 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
       <div className="mt-2 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-neutral-900">{q.name}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold text-neutral-900">{q.name}</h1>
+            {q.lost && <LostBadge />}
+          </div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
             <span>{q.customer} · {q.quote_date}</span>
             <QuoteStageSelect id={q.id} stage={q.stage} />
             {q.exhibit_label && <span>Exhibit {q.exhibit_label}</span>}
+            <LostToggle lost={q.lost} itemLabel={q.name} onToggle={(next) => markQuoteLost(q.id, next)} />
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from "react";
 import type { Site } from "@/lib/types";
-import { updateSite, deleteSite } from "../actions";
+import { updateSite, deleteSite, markSiteLost } from "../actions";
 import { showToast } from "@/lib/toast-client";
 import { StageSelect } from "./stage-select";
+import { LostToggle, LostBadge } from "../../lost-toggle";
 
 export function SiteRow({ accountId, site }: { accountId: string; site: Site }) {
   const [editing, setEditing] = useState(false);
@@ -15,12 +16,20 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
     return (
       <div className="flex items-center justify-between rounded-md border border-neutral-100 px-3 py-2">
         <div>
-          <div className="text-sm font-medium text-neutral-800">{site.name}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium text-neutral-800">{site.name}</div>
+            {site.lost && <LostBadge />}
+          </div>
           <div className="text-xs text-neutral-400">{site.location}</div>
           {error && <div className="text-xs text-red-600">{error}</div>}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <StageSelect accountId={accountId} siteId={site.id} stage={site.stage} />
+          <LostToggle
+            lost={site.lost}
+            itemLabel={site.name}
+            onToggle={(next) => markSiteLost(accountId, site.id, next)}
+          />
           <button
             type="button"
             onClick={() => setEditing(true)}

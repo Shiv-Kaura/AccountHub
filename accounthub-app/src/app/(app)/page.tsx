@@ -34,9 +34,9 @@ export default async function DashboardPage() {
     supabase.from("docs").select("*").order("uploaded_at", { ascending: false }).limit(6),
     supabase.from("contacts").select("*").order("created_at", { ascending: false }).limit(6),
     supabase.from("sites").select("*").order("created_at", { ascending: false }).limit(6),
-    supabase.from("sites").select("id", { count: "exact", head: true }).neq("stage", "Live"),
-    supabase.from("quotes").select("id", { count: "exact", head: true }).neq("stage", "Live"),
-    supabase.from("sows").select("id", { count: "exact", head: true }).neq("stage", "Live"),
+    supabase.from("sites").select("id", { count: "exact", head: true }).neq("stage", "Live").eq("lost", false),
+    supabase.from("quotes").select("id", { count: "exact", head: true }).neq("stage", "Live").eq("lost", false),
+    supabase.from("sows").select("id", { count: "exact", head: true }).neq("stage", "Live").eq("lost", false),
   ]);
 
   const accountList = (accounts ?? []) as Pick<Account, "id" | "name" | "health">[];

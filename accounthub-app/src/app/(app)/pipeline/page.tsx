@@ -2,11 +2,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES, type Stage } from "@/lib/types";
 import type { Site, Account, Quote, Sow } from "@/lib/types";
-import { moveSiteStage } from "../accounts/actions";
-import { updateQuoteStage } from "../quotes/actions";
-import { updateSowStage } from "../sows/actions";
-import { moveDealStage } from "./actions";
+import { moveSiteStage, markSiteLost } from "../accounts/actions";
+import { updateQuoteStage, markQuoteLost } from "../quotes/actions";
+import { updateSowStage, markSowLost } from "../sows/actions";
+import { moveDealStage, markDealLost } from "./actions";
 import { PipelineArrows } from "./pipeline-arrows";
+import { LostToggle, LostBadge } from "../lost-toggle";
 
 type PipelineCard = {
   id: string;
@@ -17,8 +18,13 @@ type PipelineCard = {
   href: string;
   quoteHref?: string;
   sowHref?: string;
+  accountId: string | null;
+  lost: boolean;
   moveFn: (stage: string) => Promise<void>;
+  lostFn: (lost: boolean) => Promise<void>;
 };
+
+type AccountMeta = Pick<Account, "id" | "name" | "segment" | "owner_name">;
 
 const TYPE_LABEL: Record<PipelineCard["type"], string> = {
   site: "Facility",
@@ -38,16 +44,28 @@ function dealNamesMatch(a: string, b: string) {
   return a.trim().toLowerCase() === b.trim().toLowerCase() && a.trim().length > 0;
 }
 
-export default async function PipelinePage() {
+export default async function PipelinePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ segment?: string; owner?: string; lost?: string }>;
+}) {
+  const sp = await searchParams;
+  const segmentFilter = sp.segment && sp.segment !== "all" ? sp.segment : null;
+  const ownerFilter = sp.owner && sp.owner !== "all" ? sp.owner : null;
+  const showLost = sp.lost === "1";
+
   const supabase = await createClient();
   const [{ data: sites }, { data: accounts }, { data: quotes }, { data: sows }] = await Promise.all([
     supabase.from("sites").select("*").neq("stage", "Live"),
-    supabase.from("accounts").select("id, name"),
+    supabase.from("accounts").select("id, name, segment, owner_name"),
     supabase.from("quotes").select("*").neq("stage", "Live"),
     supabase.from("sows").select("*").neq("stage", "Live"),
   ]);
 
-  const accountById = new Map((accounts ?? []).map((a: Pick<Account, "id" | "name">) => [a.id, a]));
+  const accountList = (accounts ?? []) as AccountMeta[];
+  const accountById = new Map(accountList.map((a) => [a.id, a]));
+  const owners = Array.from(new Set(accountList.map((a) => a.owner_name).filter(Boolean))).sort();
+
   const siteList = (sites ?? []) as Site[];
   const quoteList = (quotes ?? []) as Quote[];
   const sowList = (sows ?? []) as Sow[];
@@ -81,7 +99,10 @@ export default async function PipelinePage() {
         href: `/quotes/${q.id}`,
         quoteHref: `/quotes/${q.id}`,
         sowHref: `/sows/${match.id}`,
+        accountId: q.account_id,
+        lost: q.lost || match.lost,
         moveFn: moveDealStage.bind(null, q.id, match.id),
+        lostFn: markDealLost.bind(null, q.id, match.id),
       });
     } else {
       soloQuotes.push(q);
@@ -98,7 +119,10 @@ export default async function PipelinePage() {
       title: s.name,
       subtitle: accountById.get(s.account_id ?? "")?.name ?? "",
       href: `/accounts/${s.account_id}`,
+      accountId: s.account_id,
+      lost: s.lost,
       moveFn: moveSiteStage.bind(null, s.account_id, s.id),
+      lostFn: markSiteLost.bind(null, s.account_id, s.id),
     })),
     ...dealCards,
     ...soloQuotes.map((q) => ({
@@ -108,7 +132,10 @@ export default async function PipelinePage() {
       title: q.name,
       subtitle: q.customer,
       href: `/quotes/${q.id}`,
+      accountId: q.account_id,
+      lost: q.lost,
       moveFn: updateQuoteStage.bind(null, q.id),
+      lostFn: markQuoteLost.bind(null, q.id),
     })),
     ...soloSows.map((s) => ({
       id: `sow-${s.id}`,
@@ -117,9 +144,22 @@ export default async function PipelinePage() {
       title: s.project_title,
       subtitle: s.customer,
       href: `/sows/${s.id}`,
+      accountId: s.account_id,
+      lost: s.lost,
       moveFn: updateSowStage.bind(null, s.id),
+      lostFn: markSowLost.bind(null, s.id),
     })),
   ];
+
+  const filteredCards = cards.filter((c) => {
+    if (!showLost && c.lost) return false;
+    const meta = c.accountId ? accountById.get(c.accountId) : undefined;
+    if (segmentFilter && meta?.segment !== segmentFilter) return false;
+    if (ownerFilter && meta?.owner_name !== ownerFilter) return false;
+    return true;
+  });
+
+  const hasActiveFilters = Boolean(segmentFilter || ownerFilter || showLost);
 
   return (
     <div className="p-8">
@@ -129,9 +169,57 @@ export default async function PipelinePage() {
         deal are shown as one tile and move together.
       </p>
 
+      <form
+        action="/pipeline"
+        className="mt-4 flex flex-wrap items-end gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3"
+      >
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-neutral-600">Segment</label>
+          <select
+            name="segment"
+            defaultValue={sp.segment ?? "all"}
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          >
+            <option value="all">All</option>
+            <option value="managed">Managed</option>
+            <option value="prospect">Prospect</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-neutral-600">Owner</label>
+          <select
+            name="owner"
+            defaultValue={sp.owner ?? "all"}
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          >
+            <option value="all">All</option>
+            {owners.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
+        <label className="flex items-center gap-1.5 pb-2 text-xs text-neutral-600">
+          <input type="checkbox" name="lost" value="1" defaultChecked={showLost} />
+          Show lost
+        </label>
+        <button
+          type="submit"
+          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650]"
+        >
+          Apply filters
+        </button>
+        {hasActiveFilters && (
+          <Link href="/pipeline" className="pb-2 text-xs text-neutral-400 hover:text-neutral-700">
+            Clear filters
+          </Link>
+        )}
+      </form>
+
       <div className="mt-6 grid grid-cols-1 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
         {STAGES.filter((s) => s !== "Live").map((stage) => {
-          const stageCards = cards.filter((c) => c.stage === stage);
+          const stageCards = filteredCards.filter((c) => c.stage === stage);
           return (
             <div key={stage} className="min-w-0 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
               <div className="flex items-center justify-between px-1">
@@ -144,7 +232,7 @@ export default async function PipelinePage() {
                 {stageCards.map((c) => (
                   <div
                     key={c.id}
-                    className="rounded-md border border-neutral-200 bg-white p-3 hover:shadow-sm"
+                    className={`rounded-md border border-neutral-200 bg-white p-3 hover:shadow-sm ${c.lost ? "opacity-60" : ""}`}
                   >
                     <div className="flex items-center gap-2">
                       <span
@@ -152,6 +240,7 @@ export default async function PipelinePage() {
                       >
                         {TYPE_LABEL[c.type]}
                       </span>
+                      {c.lost && <LostBadge />}
                     </div>
                     {c.type === "deal" ? (
                       <>
@@ -172,7 +261,10 @@ export default async function PipelinePage() {
                         <div className="text-xs text-neutral-400">{c.subtitle}</div>
                       </Link>
                     )}
-                    <PipelineArrows stage={c.stage} onMove={c.moveFn} />
+                    <div className="mt-2 flex items-center justify-between">
+                      <PipelineArrows stage={c.stage} onMove={c.moveFn} />
+                      <LostToggle lost={c.lost} itemLabel={c.title} onToggle={c.lostFn} />
+                    </div>
                   </div>
                 ))}
                 {stageCards.length === 0 && (

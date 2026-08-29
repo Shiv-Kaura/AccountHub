@@ -10,10 +10,11 @@ create extension if not exists "pgcrypto";
 create table accounts (
   id            text primary key default 'acc_' || replace(gen_random_uuid()::text, '-', ''),
   name          text not null,
-  segment       text not null default 'managed' check (segment in ('managed', 'deal')),
+  segment       text not null default 'managed' check (segment in ('managed', 'prospect')),
   health        text not null default 'green' check (health in ('green', 'yellow', 'red')),
   contact       text default '',
   owner_id      uuid references auth.users(id),
+  owner_name    text not null default '',
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
@@ -28,6 +29,7 @@ create table sites (
   target_date    date,
   owner          text default '',
   notes          text default '',
+  lost           boolean not null default false,
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
 );
@@ -88,6 +90,7 @@ create table quotes (
   implementation_items   jsonb not null default '[]',
   rate_sel               jsonb not null default '{}',
   po_rows                jsonb not null default '[]',
+  lost                   boolean not null default false,
   created_at             timestamptz not null default now(),
   updated_at             timestamptz not null default now()
 );
@@ -108,6 +111,7 @@ create table sows (
   meeting_notes      text default '',
   contact_name       text default '',
   contact_email_phone text default '',
+  lost               boolean not null default false,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );

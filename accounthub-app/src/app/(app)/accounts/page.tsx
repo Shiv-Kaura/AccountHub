@@ -39,8 +39,16 @@ export default async function AccountsPage() {
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
           >
             <option value="managed">Managed</option>
-            <option value="deal">Deal</option>
+            <option value="prospect">Prospect</option>
           </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-neutral-600">Owner</label>
+          <input
+            name="ownerName"
+            placeholder="e.g. Shiv"
+            className="w-32 rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
         </div>
         <button
           type="submit"
@@ -62,7 +70,8 @@ export default async function AccountsPage() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-[11px] uppercase tracking-wide text-neutral-400">
-                  {a.segment === "managed" ? "Managed" : "Deal"}
+                  {a.segment === "managed" ? "Managed" : "Prospect"}
+                  {a.owner_name && ` · ${a.owner_name}`}
                 </div>
                 <div className="mt-0.5 font-medium text-neutral-900">{a.name}</div>
               </div>

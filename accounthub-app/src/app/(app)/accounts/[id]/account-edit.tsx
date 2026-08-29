@@ -17,8 +17,13 @@ export function AccountHeader({ account }: { account: Account }) {
         <span className={`h-3 w-3 rounded-full ${healthDotClass(account.health)}`} />
         <h1 className="text-2xl font-semibold text-neutral-900">{account.name}</h1>
         <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
-          {account.segment === "managed" ? "Managed" : "Deal"}
+          {account.segment === "managed" ? "Managed" : "Prospect"}
         </span>
+        {account.owner_name && (
+          <span className="rounded-full bg-[#5b3a99]/10 px-2 py-0.5 text-xs font-medium text-[#3d1f6e]">
+            {account.owner_name}
+          </span>
+        )}
         <button
           type="button"
           onClick={() => setEditing(true)}
@@ -68,8 +73,14 @@ export function AccountHeader({ account }: { account: Account }) {
         className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
       >
         <option value="managed">Managed</option>
-        <option value="deal">Deal</option>
+        <option value="prospect">Prospect</option>
       </select>
+      <input
+        name="ownerName"
+        defaultValue={account.owner_name}
+        placeholder="Owner (e.g. Shiv)"
+        className="w-32 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+      />
       <button
         type="submit"
         disabled={pending}

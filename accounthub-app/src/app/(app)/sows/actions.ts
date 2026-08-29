@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { promoteAccountOnSigned } from "@/lib/account-lifecycle";
 
 export async function createSow(formData: FormData) {
   const projectTitle = String(formData.get("projectTitle") || "").trim();
@@ -75,7 +76,24 @@ export async function updateSow(id: string, formData: FormData) {
 
 export async function updateSowStage(id: string, stage: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("sows").update({ stage }).eq("id", id);
+  const { data, error } = await supabase
+    .from("sows")
+    .update({ stage })
+    .eq("id", id)
+    .select("account_id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  await promoteAccountOnSigned(data?.account_id, stage);
+
+  revalidatePath(`/sows/${id}`);
+  revalidatePath("/accounts");
+  revalidatePath("/pipeline");
+}
+
+export async function markSowLost(id: string, lost: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("sows").update({ lost }).eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath(`/sows/${id}`);
   revalidatePath("/pipeline");

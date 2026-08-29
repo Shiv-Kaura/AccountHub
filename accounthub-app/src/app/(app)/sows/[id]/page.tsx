@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { Sow } from "@/lib/types";
 import { DeleteSowButton } from "./delete-button";
 import { SowStageSelect } from "./sow-stage-select";
+import { markSowLost } from "../actions";
+import { LostToggle, LostBadge } from "../../lost-toggle";
 
 export default async function SowDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,10 +23,14 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
 
       <div className="mt-2 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-neutral-900">{s.project_title}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold text-neutral-900">{s.project_title}</h1>
+            {s.lost && <LostBadge />}
+          </div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
             <span>{s.customer} · {s.sow_date}</span>
             <SowStageSelect id={s.id} stage={s.stage} />
+            <LostToggle lost={s.lost} itemLabel={s.project_title} onToggle={(next) => markSowLost(s.id, next)} />
           </div>
         </div>
         <div className="flex items-center gap-2">

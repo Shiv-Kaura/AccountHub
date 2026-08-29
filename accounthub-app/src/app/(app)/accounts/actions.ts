@@ -3,21 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { promoteAccountOnSigned } from "@/lib/account-lifecycle";
 
 export async function createAccount(formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const segment = String(formData.get("segment") || "managed");
+  const ownerName = String(formData.get("ownerName") || "").trim();
   if (!name) return;
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("accounts")
-    .insert({ name, segment })
+    .insert({ name, segment, owner_name: ownerName })
     .select("id")
     .single();
   if (error) throw new Error(error.message);
 
   revalidatePath("/accounts");
+  revalidatePath("/pipeline");
   redirect(`/accounts/${data.id}`);
 }
 
@@ -61,6 +64,18 @@ export async function deleteSite(accountId: string, siteId: string) {
 export async function moveSiteStage(accountId: string, siteId: string, stage: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("sites").update({ stage }).eq("id", siteId);
+  if (error) throw new Error(error.message);
+
+  await promoteAccountOnSigned(accountId, stage);
+
+  revalidatePath(`/accounts/${accountId}`);
+  revalidatePath("/accounts");
+  revalidatePath("/pipeline");
+}
+
+export async function markSiteLost(accountId: string, siteId: string, lost: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("sites").update({ lost }).eq("id", siteId);
   if (error) throw new Error(error.message);
 
   revalidatePath(`/accounts/${accountId}`);
@@ -142,17 +157,19 @@ export async function updateAccount(accountId: string, formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const health = String(formData.get("health") || "green");
   const segment = String(formData.get("segment") || "managed");
+  const ownerName = String(formData.get("ownerName") || "").trim();
   if (!name) return;
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("accounts")
-    .update({ name, health, segment })
+    .update({ name, health, segment, owner_name: ownerName })
     .eq("id", accountId);
   if (error) throw new Error(error.message);
 
   revalidatePath(`/accounts/${accountId}`);
   revalidatePath("/accounts");
+  revalidatePath("/pipeline");
 }
 
 export async function addItem(accountId: string, formData: FormData) {
