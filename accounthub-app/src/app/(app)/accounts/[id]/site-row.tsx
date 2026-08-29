@@ -14,14 +14,14 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
 
   if (!editing) {
     return (
-      <div className="flex items-center justify-between rounded-md border border-neutral-100 px-3 py-2">
+      <div className="flex items-center justify-between rounded-md border border-white/[0.05] px-3 py-2">
         <div>
           <div className="flex items-center gap-2">
-            <div className="text-sm font-medium text-neutral-800">{site.name}</div>
+            <div className="text-sm font-medium text-[#e5e6ea]">{site.name}</div>
             {site.lost && <LostBadge />}
           </div>
-          <div className="text-xs text-neutral-400">{site.location}</div>
-          {error && <div className="text-xs text-red-600">{error}</div>}
+          <div className="text-xs text-[#5a5d64]">{site.location}</div>
+          {error && <div className="text-xs text-[#ff5c8a]">{error}</div>}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <StageSelect accountId={accountId} siteId={site.id} stage={site.stage} />
@@ -33,7 +33,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-neutral-500 hover:text-neutral-900"
+            className="text-xs text-[#8c8f96] hover:text-[#f2f2f4]"
           >
             Edit
           </button>
@@ -52,7 +52,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
                 }
               });
             }}
-            className="text-xs text-red-600 hover:text-red-800 disabled:opacity-60"
+            className="text-xs text-[#ff5c8a] hover:text-[#ff8fae] disabled:opacity-60"
           >
             {pending ? "…" : "Delete"}
           </button>
@@ -75,33 +75,33 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
           }
         });
       }}
-      className="flex flex-col gap-2 rounded-md border border-neutral-200 bg-neutral-50 p-3"
+      className="flex flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.03] p-3"
     >
       <input
         name="name"
         defaultValue={site.name}
         required
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="location"
         defaultValue={site.location}
         placeholder="City, State"
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
-      {error && <div className="text-xs text-red-600">{error}</div>}
+      {error && <div className="text-xs text-[#ff5c8a]">{error}</div>}
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
+          className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>
         <button
           type="button"
           onClick={() => setEditing(false)}
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs hover:bg-white"
+          className="rounded-md border border-white/[0.10] px-3 py-1.5 text-xs hover:bg-white/[0.06]"
         >
           Cancel
         </button>

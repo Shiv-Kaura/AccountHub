@@ -78,7 +78,7 @@ export async function updateSowStage(id: string, stage: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("sows")
-    .update({ stage })
+    .update({ stage, stage_changed_at: new Date().toISOString() })
     .eq("id", id)
     .select("account_id")
     .single();

@@ -63,7 +63,10 @@ export async function deleteSite(accountId: string, siteId: string) {
 
 export async function moveSiteStage(accountId: string, siteId: string, stage: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("sites").update({ stage }).eq("id", siteId);
+  const { error } = await supabase
+    .from("sites")
+    .update({ stage, stage_changed_at: new Date().toISOString() })
+    .eq("id", siteId);
   if (error) throw new Error(error.message);
 
   await promoteAccountOnSigned(accountId, stage);
@@ -174,7 +177,10 @@ export async function updateAccount(accountId: string, formData: FormData) {
 
 export async function moveAccountStage(accountId: string, stage: string) {
   const supabase = await createClient();
-  const { error } = await supabase.from("accounts").update({ stage }).eq("id", accountId);
+  const { error } = await supabase
+    .from("accounts")
+    .update({ stage, stage_changed_at: new Date().toISOString() })
+    .eq("id", accountId);
   if (error) throw new Error(error.message);
 
   await promoteAccountOnSigned(accountId, stage);

@@ -15,23 +15,23 @@ export function AccountHeader({ account }: { account: Account }) {
     return (
       <div className="mt-2 flex items-center gap-3">
         <span className={`h-3 w-3 rounded-full ${healthDotClass(account.health)}`} />
-        <h1 className="text-2xl font-semibold text-neutral-900">{account.name}</h1>
-        <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
+        <h1 className="text-2xl font-semibold text-[#f2f2f4]">{account.name}</h1>
+        <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-xs font-medium text-[#8c8f96]">
           {account.segment === "managed" ? "Managed" : "Prospect"}
         </span>
         {account.owner_name && (
-          <span className="rounded-full bg-[#5b3a99]/10 px-2 py-0.5 text-xs font-medium text-[#3d1f6e]">
+          <span className="rounded-full bg-[#0496ff]/[0.14] px-2 py-0.5 text-xs font-medium text-[#4fc3ff]">
             {account.owner_name}
           </span>
         )}
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="text-xs text-neutral-400 hover:text-neutral-900"
+          className="text-xs text-[#5a5d64] hover:text-[#f2f2f4]"
         >
           Edit
         </button>
-        {error && <span className="text-xs text-red-600">{error}</span>}
+        {error && <span className="text-xs text-[#ff5c8a]">{error}</span>}
       </div>
     );
   }
@@ -56,12 +56,12 @@ export function AccountHeader({ account }: { account: Account }) {
         name="name"
         defaultValue={account.name}
         required
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm font-semibold"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm font-semibold"
       />
       <select
         name="health"
         defaultValue={account.health}
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       >
         <option value="green">On track</option>
         <option value="yellow">Watch</option>
@@ -70,7 +70,7 @@ export function AccountHeader({ account }: { account: Account }) {
       <select
         name="segment"
         defaultValue={account.segment}
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       >
         <option value="managed">Managed</option>
         <option value="prospect">Prospect</option>
@@ -79,23 +79,23 @@ export function AccountHeader({ account }: { account: Account }) {
         name="ownerName"
         defaultValue={account.owner_name}
         placeholder="Owner (e.g. Shiv)"
-        className="w-32 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="w-32 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
+        className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-60"
       >
         {pending ? "Saving…" : "Save"}
       </button>
       <button
         type="button"
         onClick={() => setEditing(false)}
-        className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs hover:bg-neutral-50"
+        className="rounded-md border border-white/[0.10] px-3 py-1.5 text-xs hover:bg-white/[0.05]"
       >
         Cancel
       </button>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-[#ff5c8a]">{error}</span>}
     </form>
   );
 }

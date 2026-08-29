@@ -89,7 +89,7 @@ export async function updateQuoteStage(id: string, stage: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("quotes")
-    .update({ stage })
+    .update({ stage, stage_changed_at: new Date().toISOString() })
     .eq("id", id)
     .select("account_id")
     .single();

@@ -85,22 +85,22 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Deal / project name</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Deal / project name</label>
           <input
             name="name"
             required
             defaultValue={quote?.name}
             placeholder="e.g. RASLO - VetMed HL7 Integration"
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Account</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Account</label>
           <select
             name="accountId"
             value={accountId}
             onChange={(e) => handleAccountChange(e.target.value)}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           >
             <option value="">No account</option>
             {accounts.map((a) => (
@@ -111,56 +111,56 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Customer name</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Customer name</label>
           <input
             name="customer"
             value={customer}
             onChange={(e) => setCustomer(e.target.value)}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
           {selectedAccount && (
-            <span className="text-[11px] text-neutral-400">Auto-filled from {selectedAccount.name}</span>
+            <span className="text-[11px] text-[#5a5d64]">Auto-filled from {selectedAccount.name}</span>
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Exhibit label</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Exhibit label</label>
           <input
             name="exhibitLabel"
             defaultValue={quote?.exhibit_label}
             placeholder="e.g. A-1"
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Synthesis contact</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Synthesis contact</label>
           <input
             name="synthesisContact"
             value={synthesisContact}
             onChange={(e) => setSynthesisContact(e.target.value)}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Synthesis email / phone</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Synthesis email / phone</label>
           <input
             name="synthesisEmailPhone"
             value={synthesisEmailPhone}
             onChange={(e) => setSynthesisEmailPhone(e.target.value)}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Customer contact</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Customer contact</label>
           <input
             name="customerContact"
             value={customerContact}
             onChange={(e) => handleCustomerContactPick(e.target.value)}
             list="quote-contact-dl"
             autoComplete="off"
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
           {selectedAccount && (
             <datalist id="quote-contact-dl">
@@ -172,25 +172,25 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
             </datalist>
           )}
           {selectedAccount && selectedAccount.contacts.length > 0 && (
-            <span className="text-[11px] text-neutral-400">
+            <span className="text-[11px] text-[#5a5d64]">
               Start typing to pick a saved contact from {selectedAccount.name} — email/phone fill in
               automatically.
             </span>
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Customer email / phone</label>
+          <label className="text-xs font-medium text-[#aeb1b8]">Customer email / phone</label>
           <input
             name="customerEmailPhone"
             value={customerEmailPhone}
             onChange={(e) => setCustomerEmailPhone(e.target.value)}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
           />
         </div>
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-neutral-600">
+        <label className="text-xs font-medium text-[#aeb1b8]">
           Implementation items (one per line)
         </label>
         <textarea
@@ -198,20 +198,20 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
           rows={3}
           defaultValue={quote?.implementation_items?.join("\n")}
           placeholder="Additional HL7 Interface with VetMed"
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm"
         />
       </div>
 
       <div>
-        <div className="text-xs font-medium text-neutral-600">Rate card</div>
-        <div className="mt-2 flex flex-col divide-y divide-neutral-100 rounded-md border border-neutral-200">
+        <div className="text-xs font-medium text-[#aeb1b8]">Rate card</div>
+        <div className="mt-2 flex flex-col divide-y divide-white/[0.06] rounded-md border border-white/[0.07]">
           {RATE_CARD.map((item) => {
             const qty = selected[item.key] ?? 0;
             const checked = qty > 0;
             return (
               <label
                 key={item.key}
-                className="flex items-center justify-between gap-3 px-3 py-2 text-sm hover:bg-neutral-50"
+                className="flex items-center justify-between gap-3 px-3 py-2 text-sm hover:bg-white/[0.05]"
               >
                 <span className="flex items-center gap-2">
                   <input
@@ -222,7 +222,7 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
                     }
                   />
                   {item.label}
-                  <span className="text-xs text-neutral-400">
+                  <span className="text-xs text-[#5a5d64]">
                     {formatPrice(item.price)} {item.unit}
                   </span>
                 </span>
@@ -234,7 +234,7 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
                     onChange={(e) =>
                       setSelected((s) => ({ ...s, [item.key]: Number(e.target.value) || 1 }))
                     }
-                    className="w-20 rounded border border-neutral-300 px-2 py-1 text-xs"
+                    className="w-20 rounded border border-white/[0.10] px-2 py-1 text-xs"
                     aria-label={item.qtyLabel}
                   />
                 )}
@@ -246,10 +246,10 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
 
       {poRows.length > 0 && (
         <div>
-          <div className="text-xs font-medium text-neutral-600">Purchase order lines</div>
+          <div className="text-xs font-medium text-[#aeb1b8]">Purchase order lines</div>
           <table className="mt-2 w-full text-left text-sm">
             <thead>
-              <tr className="text-xs text-neutral-400">
+              <tr className="text-xs text-[#5a5d64]">
                 <th className="py-1 pr-2">Qty</th>
                 <th className="py-1 pr-2">Item</th>
                 <th className="py-1 pr-2">Price</th>
@@ -258,16 +258,16 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
             </thead>
             <tbody>
               {poRows.map((r, i) => (
-                <tr key={i} className="border-t border-neutral-100">
+                <tr key={i} className="border-t border-white/[0.05]">
                   <td className="py-1 pr-2">{r.qty}</td>
                   <td className="py-1 pr-2">{r.item}</td>
                   <td className="py-1 pr-2 font-medium">{r.price}</td>
-                  <td className="py-1 text-neutral-400">{r.dueDate}</td>
+                  <td className="py-1 text-[#5a5d64]">{r.dueDate}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="mt-2 text-right text-sm font-semibold text-neutral-900">
+          <div className="mt-2 text-right text-sm font-semibold text-[#f2f2f4]">
             Total: {formatPrice(total)}
           </div>
         </div>
@@ -275,7 +275,7 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
 
       <button
         type="submit"
-        className="self-start rounded-md bg-[#3d1f6e] px-4 py-2 text-sm font-medium text-white hover:bg-[#2d1650]"
+        className="self-start rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
       >
         {isEdit ? "Save changes" : "Create quote"}
       </button>

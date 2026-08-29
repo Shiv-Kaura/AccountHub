@@ -17,17 +17,17 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="p-8">
-      <Link href="/sows" className="text-sm text-neutral-400 hover:text-neutral-700">
+      <Link href="/sows" className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
         &larr; All SOWs
       </Link>
 
       <div className="mt-2 flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-neutral-900">{s.project_title}</h1>
+            <h1 className="text-2xl font-semibold text-[#f2f2f4]">{s.project_title}</h1>
             {s.lost && <LostBadge />}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-[#8c8f96]">
             <span>{s.customer} · {s.sow_date}</span>
             <SowStageSelect id={s.id} stage={s.stage} />
             <LostToggle lost={s.lost} itemLabel={s.project_title} onToggle={(next) => markSowLost(s.id, next)} />
@@ -36,7 +36,7 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
         <div className="flex items-center gap-2">
           <Link
             href={`/sows/${s.id}/edit`}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm hover:bg-white/[0.05]"
           >
             Edit
           </Link>
@@ -44,7 +44,7 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
             href={`/sows/${s.id}/export`}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#2d1650]"
+            className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-sm font-medium text-white hover:brightness-110"
           >
             Export PDF
           </a>
@@ -54,29 +54,29 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
 
       {(s.contact_name || s.contact_email_phone) && (
         <div className="mt-6 max-w-2xl">
-          <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+          <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
             Contact
           </div>
-          <p className="mt-1 text-sm text-neutral-700">
+          <p className="mt-1 text-sm text-[#c7c9d0]">
             {s.contact_name}
-            {s.contact_email_phone && <span className="text-neutral-500"> — {s.contact_email_phone}</span>}
+            {s.contact_email_phone && <span className="text-[#8c8f96]"> — {s.contact_email_phone}</span>}
           </p>
         </div>
       )}
 
       <div className="mt-6 max-w-2xl">
-        <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+        <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
           Work summary
         </div>
-        <p className="mt-1 text-sm leading-relaxed text-neutral-700">{s.work_summary}</p>
+        <p className="mt-1 text-sm leading-relaxed text-[#c7c9d0]">{s.work_summary}</p>
       </div>
 
       {s.work_details?.length > 0 && (
         <div className="mt-6 max-w-2xl">
-          <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+          <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
             Work details
           </div>
-          <ol className="mt-2 list-decimal pl-5 text-sm text-neutral-700">
+          <ol className="mt-2 list-decimal pl-5 text-sm text-[#c7c9d0]">
             {s.work_details.map((d, i) => (
               <li key={i} className="py-0.5">
                 {d}
@@ -88,10 +88,10 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
 
       {s.meeting_notes && (
         <div className="mt-6 max-w-2xl">
-          <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+          <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
             Meeting notes
           </div>
-          <p className="mt-1 text-sm text-neutral-600">{s.meeting_notes}</p>
+          <p className="mt-1 text-sm text-[#aeb1b8]">{s.meeting_notes}</p>
         </div>
       )}
     </div>

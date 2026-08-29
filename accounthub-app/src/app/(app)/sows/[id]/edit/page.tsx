@@ -16,10 +16,10 @@ export default async function EditSowPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="p-8">
-      <Link href={`/sows/${id}`} className="text-sm text-neutral-400 hover:text-neutral-700">
+      <Link href={`/sows/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
         &larr; Back to SOW
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-neutral-900">Edit SOW</h1>
+      <h1 className="mt-2 text-2xl font-semibold text-[#f2f2f4]">Edit SOW</h1>
       <SowForm accounts={accounts ?? []} sow={sow as Sow} />
     </div>
   );

@@ -16,10 +16,10 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="p-8">
-      <Link href={`/quotes/${id}`} className="text-sm text-neutral-400 hover:text-neutral-700">
+      <Link href={`/quotes/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
         &larr; Back to quote
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-neutral-900">Edit quote</h1>
+      <h1 className="mt-2 text-2xl font-semibold text-[#f2f2f4]">Edit quote</h1>
       <QuoteForm accounts={accounts ?? []} quote={quote as Quote} />
     </div>
   );

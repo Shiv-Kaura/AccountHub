@@ -30,23 +30,23 @@ export function AddContactForm({ accountId }: { accountId: string }) {
         name="name"
         placeholder="Full name"
         required
-        className="col-span-2 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="col-span-2 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="email"
         placeholder="Email"
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="phone"
         placeholder="Phone"
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
-      {error && <div className="col-span-2 text-xs text-red-600">{error}</div>}
+      {error && <div className="col-span-2 text-xs text-[#ff5c8a]">{error}</div>}
       <button
         type="submit"
         disabled={pending}
-        className="col-span-2 rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50 disabled:opacity-60"
+        className="col-span-2 rounded-md border border-white/[0.10] px-3 py-1.5 text-sm hover:bg-white/[0.05] disabled:opacity-60"
       >
         {pending ? "Adding…" : "+ Add contact"}
       </button>

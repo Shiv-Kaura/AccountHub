@@ -51,7 +51,7 @@ export default async function AccountDetailPage({
 
   return (
     <div className="p-8">
-      <Link href="/accounts" className="text-sm text-neutral-400 hover:text-neutral-700">
+      <Link href="/accounts" className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
         &larr; All accounts / groups
       </Link>
 
@@ -59,83 +59,83 @@ export default async function AccountDetailPage({
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Priority items */}
-        <section className="rounded-lg border border-neutral-200 p-5 lg:col-span-2">
-          <h2 className="font-medium text-neutral-900">Priority items</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5 lg:col-span-2">
+          <h2 className="font-medium text-[#f2f2f4]">Priority items</h2>
           <div className="mt-3 flex flex-col gap-2">
             {itemList.map((it) => (
               <ItemRow key={it.id} accountId={id} item={it} />
             ))}
             {itemList.length === 0 && (
-              <p className="text-sm text-neutral-400">Nothing tracked yet — this account is quiet.</p>
+              <p className="text-sm text-[#5a5d64]">Nothing tracked yet — this account is quiet.</p>
             )}
           </div>
           <AddItemForm accountId={id} />
         </section>
 
         {/* Sites */}
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Facilities / sites</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Facilities / sites</h2>
           <div className="mt-3 flex flex-col gap-2">
             {siteList.map((s) => (
               <SiteRow key={s.id} accountId={id} site={s} />
             ))}
             {siteList.length === 0 && (
-              <p className="text-sm text-neutral-400">No facilities yet.</p>
+              <p className="text-sm text-[#5a5d64]">No facilities yet.</p>
             )}
           </div>
           <AddSiteForm accountId={id} />
         </section>
 
         {/* Contacts */}
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Contacts</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Contacts</h2>
           <div className="mt-3 flex flex-col gap-2">
             {contactList.map((c) => (
               <ContactRow key={c.id} accountId={id} contact={c} />
             ))}
             {contactList.length === 0 && (
-              <p className="text-sm text-neutral-400">No contacts yet.</p>
+              <p className="text-sm text-[#5a5d64]">No contacts yet.</p>
             )}
           </div>
           <AddContactForm accountId={id} />
         </section>
 
         {/* Notes */}
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Activity notes</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Activity notes</h2>
           <AddNoteForm accountId={id} />
           <div className="mt-3 flex flex-col gap-2">
             {noteList.map((n) => (
               <NoteRow key={n.id} accountId={id} note={n} />
             ))}
-            {noteList.length === 0 && <p className="text-sm text-neutral-400">No notes yet.</p>}
+            {noteList.length === 0 && <p className="text-sm text-[#5a5d64]">No notes yet.</p>}
           </div>
         </section>
 
         {/* Docs */}
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Uploaded documents</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Uploaded documents</h2>
           <div className="mt-3 flex flex-col gap-2">
             {docList.map((d) => (
               <DocLink key={d.id} doc={d} />
             ))}
-            {docList.length === 0 && <p className="text-sm text-neutral-400">No documents yet.</p>}
+            {docList.length === 0 && <p className="text-sm text-[#5a5d64]">No documents yet.</p>}
           </div>
           <form action={uploadDocWithId} className="mt-4 flex flex-col gap-2">
             <input
               name="title"
               placeholder="Deal / project title"
               required
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+              className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
             />
             <div className="flex gap-2">
-              <select name="kind" className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm">
+              <select name="kind" className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm">
                 <option value="quote">Quote</option>
                 <option value="sow">SOW</option>
               </select>
               <select
                 name="facilitySiteId"
-                className="flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                className="flex-1 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
               >
                 <option value="">No facility (group-level)</option>
                 {siteList.map((s) => (
@@ -146,18 +146,18 @@ export default async function AccountDetailPage({
               </select>
             </div>
             <input type="file" name="file" accept="application/pdf,.pdf" required className="text-sm" />
-            <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <label className="flex items-center gap-1.5 text-xs text-[#aeb1b8]">
               <input type="checkbox" name="trackPipeline" defaultChecked />
               Track this on the pipeline
             </label>
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-600">
+              <label className="text-xs font-medium text-[#aeb1b8]">
                 Pipeline stage (continues this account&apos;s current tile, if any)
               </label>
               <select
                 name="pipelineStage"
                 defaultValue={a.stage}
-                className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
               >
                 {STAGES.filter((s) => s !== "Live").map((s) => (
                   <option key={s} value={s}>
@@ -168,7 +168,7 @@ export default async function AccountDetailPage({
             </div>
             <button
               type="submit"
-              className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+              className="self-start rounded-md border border-white/[0.10] px-3 py-1.5 text-sm hover:bg-white/[0.05]"
             >
               Upload
             </button>

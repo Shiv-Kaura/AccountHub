@@ -18,6 +18,7 @@ create table accounts (
   stage         text not null default 'Discovery'
                 check (stage in ('Discovery', 'SOW & Quote Sent', 'Signed', 'Assigned to PM/Work Session Scheduled', 'Live')),
   lost          boolean not null default false,
+  stage_changed_at timestamptz not null default now(),
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
@@ -33,6 +34,7 @@ create table sites (
   owner          text default '',
   notes          text default '',
   lost           boolean not null default false,
+  stage_changed_at timestamptz not null default now(),
   created_at     timestamptz not null default now(),
   updated_at     timestamptz not null default now()
 );
@@ -95,6 +97,7 @@ create table quotes (
   po_rows                jsonb not null default '[]',
   lost                   boolean not null default false,
   track_pipeline         boolean not null default true,
+  stage_changed_at       timestamptz not null default now(),
   created_at             timestamptz not null default now(),
   updated_at             timestamptz not null default now()
 );
@@ -117,6 +120,7 @@ create table sows (
   contact_email_phone text default '',
   lost               boolean not null default false,
   track_pipeline     boolean not null default true,
+  stage_changed_at   timestamptz not null default now(),
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );

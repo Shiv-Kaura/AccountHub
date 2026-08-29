@@ -34,8 +34,8 @@ export function LostToggle({
       }}
       className={
         lost
-          ? "rounded-md border border-neutral-300 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50 disabled:opacity-60"
-          : "rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-60"
+          ? "rounded-md border border-white/[0.10] px-2 py-1 text-xs text-[#aeb1b8] hover:bg-white/[0.05] disabled:opacity-60"
+          : "rounded-md border border-[#d81159]/30 px-2 py-1 text-xs text-[#ff5c8a] hover:bg-[#d81159]/[0.16] disabled:opacity-60"
       }
     >
       {pending ? "…" : lost ? "Reopen" : "Mark lost"}
@@ -45,7 +45,7 @@ export function LostToggle({
 
 export function LostBadge() {
   return (
-    <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-[10px] font-semibold uppercase text-neutral-500">
+    <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase text-[#8c8f96]">
       Lost
     </span>
   );

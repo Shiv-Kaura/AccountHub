@@ -35,7 +35,7 @@ export function PipelineArrows({
         disabled={pending || !prev}
         onClick={() => move(prev)}
         title={prev ? `Move back to ${prev}` : "Already at the first stage"}
-        className="rounded border border-neutral-200 px-1.5 py-0.5 text-xs text-neutral-500 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-30"
+        className="rounded border border-white/[0.07] px-1.5 py-0.5 text-xs text-[#8c8f96] hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-30"
       >
         &larr;
       </button>
@@ -44,7 +44,7 @@ export function PipelineArrows({
         disabled={pending || !next}
         onClick={() => move(next)}
         title={next ? `Move forward to ${next}` : "Already at the last stage"}
-        className="rounded border border-neutral-200 px-1.5 py-0.5 text-xs text-neutral-500 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-30"
+        className="rounded border border-white/[0.07] px-1.5 py-0.5 text-xs text-[#8c8f96] hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-30"
       >
         &rarr;
       </button>

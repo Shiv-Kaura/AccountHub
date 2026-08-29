@@ -15,7 +15,7 @@ export default function RootError({
 
   return (
     <html>
-      <body style={{ fontFamily: "system-ui, sans-serif" }}>
+      <body style={{ fontFamily: "system-ui, sans-serif", background: "#0a0a0b" }}>
         <div
           style={{
             minHeight: "100vh",
@@ -26,10 +26,11 @@ export default function RootError({
             gap: 12,
             padding: 32,
             textAlign: "center",
+            color: "#eceef0",
           }}
         >
           <div style={{ fontSize: 18, fontWeight: 600 }}>AccountHub hit a snag</div>
-          <p style={{ maxWidth: 380, fontSize: 14, color: "#737373" }}>
+          <p style={{ maxWidth: 380, fontSize: 14, color: "#8c8f96" }}>
             {error.message || "Something went wrong loading the app."}
           </p>
           <button
@@ -38,7 +39,7 @@ export default function RootError({
             style={{
               marginTop: 8,
               borderRadius: 6,
-              background: "#171717",
+              background: "linear-gradient(180deg, #0496ff, #006ba6)",
               color: "#fff",
               padding: "8px 16px",
               fontSize: 14,

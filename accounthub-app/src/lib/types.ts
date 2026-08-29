@@ -22,6 +22,7 @@ export type Account = {
   owner_name: string;
   stage: Stage;
   lost: boolean;
+  stage_changed_at: string;
   created_at: string;
   updated_at: string;
 };
@@ -36,6 +37,7 @@ export type Site = {
   owner: string;
   notes: string;
   lost: boolean;
+  stage_changed_at: string;
 };
 
 export type Contact = {
@@ -87,6 +89,7 @@ export type Quote = {
   po_rows: { qty: string; item: string; price: string; dueDate: string; source: string }[];
   lost: boolean;
   track_pipeline: boolean;
+  stage_changed_at: string;
 };
 
 export type Sow = {
@@ -106,6 +109,7 @@ export type Sow = {
   contact_email_phone: string;
   lost: boolean;
   track_pipeline: boolean;
+  stage_changed_at: string;
 };
 
 export type SowDraft = {

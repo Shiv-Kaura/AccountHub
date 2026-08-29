@@ -95,29 +95,29 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-semibold text-neutral-900">Dashboard</h1>
-      <p className="mt-1 text-sm text-neutral-500">What needs your attention today.</p>
+      <h1 className="text-2xl font-semibold text-[#f2f2f4]">Dashboard</h1>
+      <p className="mt-1 text-sm text-[#8c8f96]">What needs your attention today.</p>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {stats.map((s) => (
           <Link
             key={s.label}
             href={s.href}
-            className="rounded-lg border border-neutral-200 p-4 hover:border-[#5b3a99]/40 hover:shadow-sm"
+            className="rounded-lg border border-white/[0.07] p-4 hover:border-[#0496ff]/40 hover:shadow-sm"
           >
-            <div className="text-2xl font-semibold text-[#3d1f6e]">{s.value}</div>
-            <div className="mt-1 text-xs text-neutral-500">{s.label}</div>
+            <div className="text-2xl font-semibold text-[#4fc3ff]">{s.value}</div>
+            <div className="mt-1 text-xs text-[#8c8f96]">{s.label}</div>
           </Link>
         ))}
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Needs attention</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Needs attention</h2>
 
           {flagged.length > 0 && (
             <div className="mt-3">
-              <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+              <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
                 Accounts flagged
               </div>
               <div className="mt-2 flex flex-col gap-2">
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
                   <Link
                     key={a.id}
                     href={`/accounts/${a.id}`}
-                    className="flex items-center gap-2 rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                    className="flex items-center gap-2 rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
                   >
                     <span className={`h-2.5 w-2.5 rounded-full ${healthDotClass(a.health)}`} />
                     {a.name}
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
 
           {overdueItems.length > 0 && (
             <div className="mt-4">
-              <div className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+              <div className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">
                 Overdue priority items
               </div>
               <div className="mt-2 flex flex-col gap-2">
@@ -145,10 +145,10 @@ export default async function DashboardPage() {
                   <Link
                     key={it.id}
                     href={`/accounts/${it.account_id}`}
-                    className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                    className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
                   >
-                    <div className="font-medium text-neutral-800">{it.title}</div>
-                    <div className="text-xs text-red-600">
+                    <div className="font-medium text-[#e5e6ea]">{it.title}</div>
+                    <div className="text-xs text-[#ff5c8a]">
                       due {it.due_date} · {accountById.get(it.account_id)?.name ?? ""}
                     </div>
                   </Link>
@@ -158,25 +158,25 @@ export default async function DashboardPage() {
           )}
 
           {flagged.length === 0 && overdueItems.length === 0 && (
-            <p className="mt-3 text-sm text-neutral-400">Nothing flagged — everything&apos;s on track.</p>
+            <p className="mt-3 text-sm text-[#5a5d64]">Nothing flagged — everything&apos;s on track.</p>
           )}
         </section>
 
-        <section className="rounded-lg border border-neutral-200 p-5">
-          <h2 className="font-medium text-neutral-900">Recent activity</h2>
+        <section className="rounded-lg border border-white/[0.07] p-5">
+          <h2 className="font-medium text-[#f2f2f4]">Recent activity</h2>
           <div className="mt-3 flex flex-col gap-2">
             {activity.map((a, i) => (
               <Link
                 key={i}
                 href={a.href}
-                className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
               >
-                <div className="font-medium text-neutral-800">{a.label}</div>
-                <div className="truncate text-xs text-neutral-500">{a.detail}</div>
+                <div className="font-medium text-[#e5e6ea]">{a.label}</div>
+                <div className="truncate text-xs text-[#8c8f96]">{a.detail}</div>
               </Link>
             ))}
             {activity.length === 0 && (
-              <p className="text-sm text-neutral-400">Nothing yet — activity will show up here.</p>
+              <p className="text-sm text-[#5a5d64]">Nothing yet — activity will show up here.</p>
             )}
           </div>
         </section>

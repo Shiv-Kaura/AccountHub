@@ -11,10 +11,10 @@ export default async function NewSowPage() {
 
   return (
     <div className="p-8">
-      <Link href="/sows" className="text-sm text-neutral-400 hover:text-neutral-700">
+      <Link href="/sows" className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
         &larr; All SOWs
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-neutral-900">New SOW</h1>
+      <h1 className="mt-2 text-2xl font-semibold text-[#f2f2f4]">New SOW</h1>
 
       <SowForm accounts={accounts ?? []} />
     </div>

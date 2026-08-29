@@ -31,17 +31,17 @@ export function AddNoteForm({ accountId }: { accountId: string }) {
           name="body"
           placeholder="What happened, what's next…"
           required
-          className="flex-1 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="flex-1 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
         />
         <button
           type="submit"
           disabled={pending}
-          className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50 disabled:opacity-60"
+          className="self-start rounded-md border border-white/[0.10] px-3 py-1.5 text-sm hover:bg-white/[0.05] disabled:opacity-60"
         >
           {pending ? "Adding…" : "Add"}
         </button>
       </div>
-      {error && <div className="text-xs text-red-600">{error}</div>}
+      {error && <div className="text-xs text-[#ff5c8a]">{error}</div>}
     </form>
   );
 }

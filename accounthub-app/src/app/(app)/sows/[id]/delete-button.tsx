@@ -16,7 +16,7 @@ export function DeleteSowButton({ id }: { id: string }) {
           deleteSow(id);
         });
       }}
-      className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60"
+      className="rounded-md border border-white/[0.10] px-3 py-1.5 text-sm text-[#ff5c8a] hover:bg-[#d81159]/[0.16] disabled:opacity-60"
     >
       {pending ? "Deleting…" : "Delete"}
     </button>

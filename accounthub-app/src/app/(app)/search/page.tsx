@@ -14,8 +14,8 @@ export default async function SearchPage({
   if (!query) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-semibold text-neutral-900">Search</h1>
-        <p className="mt-2 text-sm text-neutral-400">Type something in the sidebar search box.</p>
+        <h1 className="text-2xl font-semibold text-[#f2f2f4]">Search</h1>
+        <p className="mt-2 text-sm text-[#5a5d64]">Type something in the sidebar search box.</p>
       </div>
     );
   }
@@ -39,19 +39,19 @@ export default async function SearchPage({
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-semibold text-neutral-900">Search results for &ldquo;{query}&rdquo;</h1>
+      <h1 className="text-2xl font-semibold text-[#f2f2f4]">Search results for &ldquo;{query}&rdquo;</h1>
 
-      {noResults && <p className="mt-4 text-sm text-neutral-400">Nothing matched.</p>}
+      {noResults && <p className="mt-4 text-sm text-[#5a5d64]">Nothing matched.</p>}
 
       {accountList.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-neutral-400">Accounts</h2>
+          <h2 className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">Accounts</h2>
           <div className="mt-2 flex flex-col gap-2">
             {accountList.map((a) => (
               <Link
                 key={a.id}
                 href={`/accounts/${a.id}`}
-                className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
               >
                 {a.name}
               </Link>
@@ -62,16 +62,16 @@ export default async function SearchPage({
 
       {contactList.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-neutral-400">Contacts</h2>
+          <h2 className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">Contacts</h2>
           <div className="mt-2 flex flex-col gap-2">
             {contactList.map((c) => (
               <Link
                 key={c.id}
                 href={`/accounts/${c.account_id}`}
-                className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
               >
-                <div className="font-medium text-neutral-800">{c.name}</div>
-                <div className="text-xs text-neutral-400">{[c.email, c.phone].filter(Boolean).join(" · ")}</div>
+                <div className="font-medium text-[#e5e6ea]">{c.name}</div>
+                <div className="text-xs text-[#5a5d64]">{[c.email, c.phone].filter(Boolean).join(" · ")}</div>
               </Link>
             ))}
           </div>
@@ -80,16 +80,16 @@ export default async function SearchPage({
 
       {quoteList.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-neutral-400">Quotes</h2>
+          <h2 className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">Quotes</h2>
           <div className="mt-2 flex flex-col gap-2">
             {quoteList.map((qt) => (
               <Link
                 key={qt.id}
                 href={`/quotes/${qt.id}`}
-                className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
               >
-                <div className="font-medium text-neutral-800">{qt.name}</div>
-                <div className="text-xs text-neutral-400">{qt.customer}</div>
+                <div className="font-medium text-[#e5e6ea]">{qt.name}</div>
+                <div className="text-xs text-[#5a5d64]">{qt.customer}</div>
               </Link>
             ))}
           </div>
@@ -98,16 +98,16 @@ export default async function SearchPage({
 
       {sowList.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-xs font-medium uppercase tracking-wide text-neutral-400">SOWs</h2>
+          <h2 className="text-xs font-medium uppercase tracking-wide text-[#5a5d64]">SOWs</h2>
           <div className="mt-2 flex flex-col gap-2">
             {sowList.map((s) => (
               <Link
                 key={s.id}
                 href={`/sows/${s.id}`}
-                className="rounded-md border border-neutral-100 px-3 py-2 text-sm hover:border-neutral-200"
+                className="rounded-md border border-white/[0.05] px-3 py-2 text-sm hover:border-white/[0.12]"
               >
-                <div className="font-medium text-neutral-800">{s.project_title}</div>
-                <div className="text-xs text-neutral-400">{s.customer}</div>
+                <div className="font-medium text-[#e5e6ea]">{s.project_title}</div>
+                <div className="text-xs text-[#5a5d64]">{s.customer}</div>
               </Link>
             ))}
           </div>

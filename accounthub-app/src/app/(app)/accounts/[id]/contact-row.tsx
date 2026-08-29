@@ -12,22 +12,22 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
 
   if (!editing) {
     return (
-      <div className="flex items-start justify-between gap-2 rounded-md border border-neutral-100 px-3 py-2 text-sm">
+      <div className="flex items-start justify-between gap-2 rounded-md border border-white/[0.05] px-3 py-2 text-sm">
         <div>
-          <div className="font-medium text-neutral-800">
+          <div className="font-medium text-[#e5e6ea]">
             {contact.name}
-            {contact.role && <span className="ml-2 text-xs text-neutral-400">{contact.role}</span>}
+            {contact.role && <span className="ml-2 text-xs text-[#5a5d64]">{contact.role}</span>}
           </div>
-          <div className="text-xs text-neutral-400">
+          <div className="text-xs text-[#5a5d64]">
             {[contact.email, contact.phone].filter(Boolean).join(" · ")}
           </div>
-          {error && <div className="text-xs text-red-600">{error}</div>}
+          {error && <div className="text-xs text-[#ff5c8a]">{error}</div>}
         </div>
         <div className="flex shrink-0 gap-2">
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-neutral-500 hover:text-neutral-900"
+            className="text-xs text-[#8c8f96] hover:text-[#f2f2f4]"
           >
             Edit
           </button>
@@ -46,7 +46,7 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
                 }
               });
             }}
-            className="text-xs text-red-600 hover:text-red-800 disabled:opacity-60"
+            className="text-xs text-[#ff5c8a] hover:text-[#ff8fae] disabled:opacity-60"
           >
             {pending ? "…" : "Delete"}
           </button>
@@ -69,45 +69,45 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
           }
         });
       }}
-      className="grid grid-cols-2 gap-2 rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm"
+      className="grid grid-cols-2 gap-2 rounded-md border border-white/[0.07] bg-white/[0.03] p-3 text-sm"
     >
       <input
         name="name"
         defaultValue={contact.name}
         required
-        className="col-span-2 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="col-span-2 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="role"
         defaultValue={contact.role}
         placeholder="Role"
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="email"
         defaultValue={contact.email}
         placeholder="Email"
-        className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
       <input
         name="phone"
         defaultValue={contact.phone}
         placeholder="Phone"
-        className="col-span-2 rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+        className="col-span-2 rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
       />
-      {error && <div className="col-span-2 text-xs text-red-600">{error}</div>}
+      {error && <div className="col-span-2 text-xs text-[#ff5c8a]">{error}</div>}
       <div className="col-span-2 flex gap-2">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650] disabled:opacity-60"
+          className="rounded-md bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save"}
         </button>
         <button
           type="button"
           onClick={() => setEditing(false)}
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs hover:bg-white"
+          className="rounded-md border border-white/[0.10] px-3 py-1.5 text-xs hover:bg-white/[0.06]"
         >
           Cancel
         </button>

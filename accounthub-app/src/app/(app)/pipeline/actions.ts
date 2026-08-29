@@ -7,9 +7,15 @@ import { promoteAccountOnSigned } from "@/lib/account-lifecycle";
 export async function moveDealStage(quoteId: string, sowId: string, stage: string) {
   const supabase = await createClient();
 
+  const changedAt = new Date().toISOString();
   const [{ data: quoteRow, error: quoteError }, { error: sowError }] = await Promise.all([
-    supabase.from("quotes").update({ stage }).eq("id", quoteId).select("account_id").single(),
-    supabase.from("sows").update({ stage }).eq("id", sowId),
+    supabase
+      .from("quotes")
+      .update({ stage, stage_changed_at: changedAt })
+      .eq("id", quoteId)
+      .select("account_id")
+      .single(),
+    supabase.from("sows").update({ stage, stage_changed_at: changedAt }).eq("id", sowId),
   ]);
 
   if (quoteError) throw new Error(quoteError.message);

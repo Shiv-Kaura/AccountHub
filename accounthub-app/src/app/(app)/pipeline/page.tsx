@@ -6,8 +6,10 @@ import { moveSiteStage, markSiteLost, moveAccountStage, markAccountLost } from "
 import { updateQuoteStage, markQuoteLost } from "../quotes/actions";
 import { updateSowStage, markSowLost } from "../sows/actions";
 import { moveDealStage, markDealLost } from "./actions";
-import { PipelineArrows } from "./pipeline-arrows";
-import { LostToggle, LostBadge } from "../lost-toggle";
+import { DarkPipelineArrows, DarkLostToggle, DarkLostBadge } from "./dark-controls";
+import { FacilityIcon, DocIcon, SparkIcon, SearchIcon, DotsIcon, EmptyIcon, FilterIcon } from "./pipeline-icons";
+import { ownerInitials, ownerGradient } from "@/lib/owner-avatar";
+import { daysInStage, daysInStageLabel } from "@/lib/ui";
 
 type PipelineCard = {
   id: string;
@@ -19,12 +21,14 @@ type PipelineCard = {
   quoteHref?: string;
   sowHref?: string;
   accountId: string | null;
+  ownerName: string;
+  stageChangedAt: string;
   lost: boolean;
   moveFn: (stage: string) => Promise<void>;
   lostFn: (lost: boolean) => Promise<void>;
 };
 
-type AccountMeta = Pick<Account, "id" | "name" | "segment" | "owner_name" | "stage" | "lost">;
+type AccountMeta = Pick<Account, "id" | "name" | "segment" | "owner_name" | "stage" | "lost" | "stage_changed_at">;
 
 const TYPE_LABEL: Record<PipelineCard["type"], string> = {
   site: "Facility",
@@ -34,13 +38,28 @@ const TYPE_LABEL: Record<PipelineCard["type"], string> = {
   prospect: "Prospect",
 };
 
-const TYPE_BADGE_CLASS: Record<PipelineCard["type"], string> = {
-  site: "bg-neutral-100 text-neutral-500",
-  quote: "bg-blue-50 text-blue-600",
-  sow: "bg-violet-50 text-violet-600",
-  deal: "bg-[#5b3a99]/10 text-[#3d1f6e]",
-  prospect: "bg-amber-50 text-amber-600",
-};
+// Every badge maps to the approved dark design system: neutral gray by
+// default, with color reserved for the two hues that carry meaning
+// (sunflower-gold = Prospect, dodger-blue/cornflower-ocean = anything
+// quote/SOW-shaped). Facility stays plain gray on purpose.
+function badgeClasses(type: PipelineCard["type"]) {
+  switch (type) {
+    case "prospect":
+      return "text-[#ffbc42] bg-[rgba(255,188,66,0.13)]";
+    case "quote":
+    case "sow":
+    case "deal":
+      return "text-[#4fc3ff] bg-[rgba(4,150,255,0.14)]";
+    default:
+      return "text-[#aeb1b8] bg-white/[0.06]";
+  }
+}
+
+function BadgeIcon({ type }: { type: PipelineCard["type"] }) {
+  if (type === "prospect") return <SparkIcon />;
+  if (type === "quote" || type === "sow" || type === "deal") return <DocIcon />;
+  return <FacilityIcon />;
+}
 
 function dealNamesMatch(a: string, b: string) {
   return a.trim().toLowerCase() === b.trim().toLowerCase() && a.trim().length > 0;
@@ -59,7 +78,7 @@ export default async function PipelinePage({
   const supabase = await createClient();
   const [{ data: sites }, { data: accounts }, { data: quotes }, { data: sows }] = await Promise.all([
     supabase.from("sites").select("*").neq("stage", "Live"),
-    supabase.from("accounts").select("id, name, segment, owner_name, stage, lost"),
+    supabase.from("accounts").select("id, name, segment, owner_name, stage, lost, stage_changed_at"),
     supabase.from("quotes").select("*").neq("stage", "Live"),
     supabase.from("sows").select("*").neq("stage", "Live"),
   ]);
@@ -104,6 +123,8 @@ export default async function PipelinePage({
         quoteHref: `/quotes/${q.id}`,
         sowHref: `/sows/${match.id}`,
         accountId: q.account_id,
+        ownerName: accountById.get(q.account_id ?? "")?.owner_name ?? "",
+        stageChangedAt: q.stage_changed_at < match.stage_changed_at ? match.stage_changed_at : q.stage_changed_at,
         lost: q.lost || match.lost,
         moveFn: moveDealStage.bind(null, q.id, match.id),
         lostFn: markDealLost.bind(null, q.id, match.id),
@@ -124,6 +145,8 @@ export default async function PipelinePage({
       subtitle: accountById.get(s.account_id ?? "")?.name ?? "",
       href: `/accounts/${s.account_id}`,
       accountId: s.account_id,
+      ownerName: s.owner || accountById.get(s.account_id ?? "")?.owner_name || "",
+      stageChangedAt: s.stage_changed_at,
       lost: s.lost,
       moveFn: moveSiteStage.bind(null, s.account_id, s.id),
       lostFn: markSiteLost.bind(null, s.account_id, s.id),
@@ -137,6 +160,8 @@ export default async function PipelinePage({
       subtitle: q.customer,
       href: `/quotes/${q.id}`,
       accountId: q.account_id,
+      ownerName: accountById.get(q.account_id ?? "")?.owner_name ?? "",
+      stageChangedAt: q.stage_changed_at,
       lost: q.lost,
       moveFn: updateQuoteStage.bind(null, q.id),
       lostFn: markQuoteLost.bind(null, q.id),
@@ -149,6 +174,8 @@ export default async function PipelinePage({
       subtitle: s.customer,
       href: `/sows/${s.id}`,
       accountId: s.account_id,
+      ownerName: accountById.get(s.account_id ?? "")?.owner_name ?? "",
+      stageChangedAt: s.stage_changed_at,
       lost: s.lost,
       moveFn: updateSowStage.bind(null, s.id),
       lostFn: markSowLost.bind(null, s.id),
@@ -168,9 +195,11 @@ export default async function PipelinePage({
       type: "prospect" as const,
       stage: a.stage,
       title: a.name,
-      subtitle: a.owner_name || "New prospect — no quote/SOW yet",
+      subtitle: a.owner_name ? "New prospect, no quote/SOW yet" : "New prospect — no quote/SOW yet",
       href: `/accounts/${a.id}`,
       accountId: a.id,
+      ownerName: a.owner_name ?? "",
+      stageChangedAt: a.stage_changed_at,
       lost: a.lost,
       moveFn: moveAccountStage.bind(null, a.id),
       lostFn: markAccountLost.bind(null, a.id),
@@ -189,114 +218,196 @@ export default async function PipelinePage({
   const hasActiveFilters = Boolean(segmentFilter || ownerFilter || showLost);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold text-neutral-900">Pipeline</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        Every prospect, facility being onboarded, quote, and SOW, grouped by stage. A quote and
-        SOW for the same deal are shown as one tile and move together; a prospect with nothing
-        attached yet still shows up so you can track it from day one.
-      </p>
+    <div className="relative min-h-screen overflow-hidden bg-[#0a0a0b] text-[#eceef0]">
+      {/* whisper of grain — the texture trick behind why dark material reads as material, not flat color */}
+      <svg className="absolute h-0 w-0">
+        <filter id="pipeline-grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.4 0" />
+        </filter>
+      </svg>
+      <div className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay" style={{ filter: "url(#pipeline-grain)" }} />
+      <div
+        className="pointer-events-none absolute -top-[180px] -left-[120px] h-[420px] w-[640px]"
+        style={{ background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)" }}
+      />
 
-      <form
-        action="/pipeline"
-        className="mt-4 flex flex-wrap items-end gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3"
-      >
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Segment</label>
-          <select
-            name="segment"
-            defaultValue={sp.segment ?? "all"}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-          >
-            <option value="all">All</option>
-            <option value="managed">Managed</option>
-            <option value="prospect">Prospect</option>
-          </select>
+      {/* Top bar */}
+      <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[rgba(20,20,22,0.62)] px-7 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_10px_28px_rgba(0,0,0,0.35)] backdrop-blur-[22px] backdrop-saturate-[140%]">
+        <div className="flex items-center gap-3">
+          <span className="text-[15px]">🚀</span>
+          <span className="text-[13px] font-semibold tracking-tight text-[#f2f2f4]">AccountHub</span>
+          <span className="h-3.5 w-px bg-white/10" />
+          <span className="text-[13px] text-[#8c8f96]">Pipeline</span>
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-neutral-600">Owner</label>
-          <select
-            name="owner"
-            defaultValue={sp.owner ?? "all"}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
-          >
-            <option value="all">All</option>
-            {owners.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
-        </div>
-        <label className="flex items-center gap-1.5 pb-2 text-xs text-neutral-600">
-          <input type="checkbox" name="lost" value="1" defaultChecked={showLost} />
-          Show lost
-        </label>
-        <button
-          type="submit"
-          className="rounded-md bg-[#3d1f6e] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#2d1650]"
-        >
-          Apply filters
-        </button>
-        {hasActiveFilters && (
-          <Link href="/pipeline" className="pb-2 text-xs text-neutral-400 hover:text-neutral-700">
-            Clear filters
-          </Link>
-        )}
-      </form>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
+        <form action="/search" className="flex w-[280px] items-center gap-2 rounded-[9px] border border-white/[0.08] bg-white/[0.045] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+          <SearchIcon className="text-[#6c6f78]" />
+          <input
+            name="q"
+            type="search"
+            placeholder="Search accounts, quotes…"
+            className="flex-1 bg-transparent text-xs text-[#e5e6ea] placeholder:text-[#6c6f78] focus:outline-none"
+          />
+        </form>
+
+        <form action="/pipeline" className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-xs text-[#c7c9d0] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <FilterIcon className="text-[#8c8f96]" />
+            <label className="sr-only" htmlFor="segment">Segment</label>
+            <select
+              id="segment"
+              name="segment"
+              defaultValue={sp.segment ?? "all"}
+              className="bg-transparent text-xs text-[#c7c9d0] focus:outline-none"
+            >
+              <option className="bg-[#161618]" value="all">Segment: All</option>
+              <option className="bg-[#161618]" value="managed">Managed</option>
+              <option className="bg-[#161618]" value="prospect">Prospect</option>
+            </select>
+          </div>
+          <div className="rounded-lg border border-white/[0.08] bg-white/[0.05] px-2.5 py-1.5 text-xs text-[#c7c9d0] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <label className="sr-only" htmlFor="owner">Owner</label>
+            <select
+              id="owner"
+              name="owner"
+              defaultValue={sp.owner ?? "all"}
+              className="bg-transparent text-xs text-[#c7c9d0] focus:outline-none"
+            >
+              <option className="bg-[#161618]" value="all">Owner: All</option>
+              {owners.map((o) => (
+                <option className="bg-[#161618]" key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
+          <label className="flex items-center gap-1.5 text-xs text-[#8c8f96]">
+            <input
+              type="checkbox"
+              name="lost"
+              value="1"
+              defaultChecked={showLost}
+              className="h-3.5 w-3.5 rounded border-white/20 bg-transparent accent-[#0496ff]"
+            />
+            Show lost
+          </label>
+          <button
+            type="submit"
+            className="rounded-lg bg-gradient-to-b from-[#0496ff] to-[#006ba6] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_16px_rgba(4,150,255,0.4)]"
+          >
+            Apply filters
+          </button>
+          {hasActiveFilters && (
+            <Link href="/pipeline" className="text-xs text-[#5a5d64] hover:text-[#c7c9d0]">
+              Clear
+            </Link>
+          )}
+        </form>
+      </div>
+
+      {/* Header */}
+      <div className="relative px-7 pt-6">
+        <h1 className="text-[19px] font-semibold tracking-tight text-[#f7f7f8]">Pipeline</h1>
+        <p className="mt-1 max-w-xl text-[12.5px] leading-relaxed text-[#8c8f96]">
+          Every prospect, facility being onboarded, quote, and SOW — grouped by stage. A quote and
+          SOW for the same deal move together; a prospect with nothing attached yet still shows up
+          so you can track it from day one.
+        </p>
+      </div>
+
+      {/* Board */}
+      <div className="relative mx-7 my-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {STAGES.filter((s) => s !== "Live").map((stage) => {
           const stageCards = filteredCards.filter((c) => c.stage === stage);
+          const activeCards = stageCards.filter((c) => !c.lost);
+          const avgDays =
+            activeCards.length > 0
+              ? Math.round(activeCards.reduce((sum, c) => sum + daysInStage(c.stageChangedAt), 0) / activeCards.length)
+              : null;
+
           return (
-            <div key={stage} className="min-w-0 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                  {stage}
-                </span>
-                <span className="text-xs text-neutral-400">{stageCards.length}</span>
+            <div key={stage} className="flex min-h-[600px] flex-col rounded-[18px] border border-white/[0.06] bg-white/[0.03] p-2.5">
+              <div className="flex items-baseline justify-between px-1.5 pb-3 pt-1.5">
+                <span className="text-[11.5px] font-bold uppercase tracking-wide text-[#aeb1b8]">{stage}</span>
+                <div className="flex items-baseline gap-1.5">
+                  {avgDays !== null && <span className="text-[10px] text-[#5a5d64]">avg {avgDays}d</span>}
+                  <span className="rounded-full bg-white/[0.06] px-2 py-px text-[10.5px] font-semibold text-[#8c8f96]">
+                    {stageCards.length}
+                  </span>
+                </div>
               </div>
-              <div className="mt-2 flex flex-col gap-2">
+
+              <div className="flex flex-col gap-2.5">
                 {stageCards.map((c) => (
                   <div
                     key={c.id}
-                    className={`rounded-md border border-neutral-200 bg-white p-3 hover:shadow-sm ${c.lost ? "opacity-60" : ""}`}
+                    className={`group relative rounded-[14px] border border-white/[0.06] bg-[#161618] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.045),0_1px_2px_rgba(0,0,0,0.3),0_8px_20px_rgba(0,0,0,0.22)] outline outline-[1.5px] outline-offset-[-1.5px] outline-transparent transition-[box-shadow,outline-color] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.3),0_10px_26px_rgba(4,150,255,0.16)] hover:outline-[rgba(4,150,255,0.38)] ${c.lost ? "opacity-60" : ""}`}
                   >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${TYPE_BADGE_CLASS[c.type]}`}
-                      >
+                    <button
+                      type="button"
+                      title="More actions"
+                      className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-md bg-white/[0.06] text-[#b0b3ba] opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <DotsIcon />
+                    </button>
+
+                    <div className="flex items-center gap-2 pr-6">
+                      <span className={`inline-flex items-center gap-1 rounded-md px-[7px] py-[3px] text-[9.5px] font-bold uppercase tracking-wide ${badgeClasses(c.type)}`}>
+                        <BadgeIcon type={c.type} />
                         {TYPE_LABEL[c.type]}
                       </span>
-                      {c.lost && <LostBadge />}
+                      {c.lost && <DarkLostBadge />}
                     </div>
+
                     {c.type === "deal" ? (
                       <>
-                        <div className="mt-1 text-sm font-medium text-neutral-800">{c.title}</div>
-                        <div className="text-xs text-neutral-400">{c.subtitle}</div>
-                        <div className="mt-1 flex gap-3 text-xs">
-                          <Link href={c.quoteHref!} className="text-blue-600 hover:underline">
+                        <div className="mt-2.5 text-[13.5px] font-semibold text-[#f2f2f4]">{c.title}</div>
+                        <div className="text-[11.5px] text-[#8c8f96]">{c.subtitle}</div>
+                        <div className="mt-2 flex gap-3.5">
+                          <Link href={c.quoteHref!} className="text-[11px] font-semibold text-[#4fc3ff] hover:underline">
                             Open quote
                           </Link>
-                          <Link href={c.sowHref!} className="text-violet-600 hover:underline">
+                          <Link href={c.sowHref!} className="text-[11px] font-semibold text-[#4fc3ff] hover:underline">
                             Open SOW
                           </Link>
                         </div>
                       </>
                     ) : (
                       <Link href={c.href} className="block">
-                        <div className="mt-1 text-sm font-medium text-neutral-800">{c.title}</div>
-                        <div className="text-xs text-neutral-400">{c.subtitle}</div>
+                        <div className="mt-2.5 text-[13.5px] font-semibold text-[#f2f2f4]">{c.title}</div>
+                        <div className="text-[11.5px] text-[#8c8f96]">{c.subtitle}</div>
                       </Link>
                     )}
-                    <div className="mt-2 flex items-center justify-between">
-                      <PipelineArrows stage={c.stage} onMove={c.moveFn} />
-                      <LostToggle lost={c.lost} itemLabel={c.title} onToggle={c.lostFn} />
+
+                    {c.ownerName && (
+                      <div className="mt-3 flex items-center gap-1.5">
+                        <span
+                          className="flex h-[19px] w-[19px] items-center justify-center rounded-full text-[8.5px] font-bold text-white"
+                          style={{
+                            background: `linear-gradient(180deg, ${ownerGradient(c.ownerName).from}, ${ownerGradient(c.ownerName).to})`,
+                            boxShadow: `0 1px 4px ${ownerGradient(c.ownerName).glow}`,
+                          }}
+                        >
+                          {ownerInitials(c.ownerName)}
+                        </span>
+                        <span className="text-[11px] text-[#c7c9d0]">{c.ownerName}</span>
+                        <span className="text-[11px] text-[#3d3f44]">·</span>
+                        <span className="text-[11px] text-[#77797f]">{daysInStageLabel(c.stageChangedAt)}</span>
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center justify-between">
+                      <DarkPipelineArrows stage={c.stage} onMove={c.moveFn} />
+                      <DarkLostToggle lost={c.lost} itemLabel={c.title} onToggle={c.lostFn} />
                     </div>
                   </div>
                 ))}
                 {stageCards.length === 0 && (
-                  <p className="px-1 text-xs text-neutral-400">Nothing here.</p>
+                  <div className="mx-0.5 flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-white/[0.09] px-3 py-5">
+                    <EmptyIcon className="text-[#3d3f44]" />
+                    <span className="text-[11px] text-[#4d4f56]">Nothing here yet</span>
+                  </div>
                 )}
               </div>
             </div>
