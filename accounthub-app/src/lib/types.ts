@@ -20,6 +20,8 @@ export type Account = {
   contact: string;
   owner_id: string | null;
   owner_name: string;
+  stage: Stage;
+  lost: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -84,6 +86,7 @@ export type Quote = {
   rate_sel: Record<string, { checked: boolean; qty: number }>;
   po_rows: { qty: string; item: string; price: string; dueDate: string; source: string }[];
   lost: boolean;
+  track_pipeline: boolean;
 };
 
 export type Sow = {
@@ -102,6 +105,7 @@ export type Sow = {
   contact_name: string;
   contact_email_phone: string;
   lost: boolean;
+  track_pipeline: boolean;
 };
 
 export type SowDraft = {

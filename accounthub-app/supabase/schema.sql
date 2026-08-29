@@ -15,6 +15,9 @@ create table accounts (
   contact       text default '',
   owner_id      uuid references auth.users(id),
   owner_name    text not null default '',
+  stage         text not null default 'Discovery'
+                check (stage in ('Discovery', 'SOW & Quote Sent', 'Signed', 'Assigned to PM/Work Session Scheduled', 'Live')),
+  lost          boolean not null default false,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
@@ -91,6 +94,7 @@ create table quotes (
   rate_sel               jsonb not null default '{}',
   po_rows                jsonb not null default '[]',
   lost                   boolean not null default false,
+  track_pipeline         boolean not null default true,
   created_at             timestamptz not null default now(),
   updated_at             timestamptz not null default now()
 );
@@ -112,6 +116,7 @@ create table sows (
   contact_name       text default '',
   contact_email_phone text default '',
   lost               boolean not null default false,
+  track_pipeline     boolean not null default true,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );

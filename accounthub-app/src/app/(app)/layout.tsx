@@ -46,7 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               href="/pipeline"
               className="rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-[#5b3a99]/10 hover:text-[#3d1f6e]"
             >
-              AM Pipeline
+              Pipeline
             </Link>
             <Link
               href="/sows"

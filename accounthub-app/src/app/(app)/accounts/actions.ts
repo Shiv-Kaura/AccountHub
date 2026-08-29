@@ -172,6 +172,28 @@ export async function updateAccount(accountId: string, formData: FormData) {
   revalidatePath("/pipeline");
 }
 
+export async function moveAccountStage(accountId: string, stage: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("accounts").update({ stage }).eq("id", accountId);
+  if (error) throw new Error(error.message);
+
+  await promoteAccountOnSigned(accountId, stage);
+
+  revalidatePath(`/accounts/${accountId}`);
+  revalidatePath("/accounts");
+  revalidatePath("/pipeline");
+}
+
+export async function markAccountLost(accountId: string, lost: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("accounts").update({ lost }).eq("id", accountId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/accounts/${accountId}`);
+  revalidatePath("/accounts");
+  revalidatePath("/pipeline");
+}
+
 export async function addItem(accountId: string, formData: FormData) {
   const title = String(formData.get("title") || "").trim();
   if (!title) return;
@@ -231,6 +253,9 @@ export async function uploadDoc(accountId: string, formData: FormData) {
   const file = formData.get("file") as File | null;
   if (!title || !file || file.size === 0) return;
 
+  const trackPipeline = formData.get("trackPipeline") === "on";
+  const pipelineStage = String(formData.get("pipelineStage") || "Discovery");
+
   const supabase = await createClient();
 
   const storagePath = `${accountId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
@@ -249,6 +274,23 @@ export async function uploadDoc(accountId: string, formData: FormData) {
     storage_path: storagePath,
   });
   if (error) throw new Error(error.message);
+
+  // Filing a quote/SOW away is enough on its own — a docs row for the record. Tracking it on
+  // the pipeline additionally means it also needs a real, stage-tracked quotes/sows row, since
+  // that's what actually drives a pipeline tile (a plain uploaded file never has). If this
+  // account already has a bare "Prospect" placeholder tile (nothing tracked yet), the stage
+  // picked here continues that tile instead of starting the new quote/SOW back at Discovery.
+  if (trackPipeline) {
+    const table = kind === "sow" ? "sows" : "quotes";
+    const titleField = kind === "sow" ? "project_title" : "name";
+    const { error: pipelineError } = await supabase
+      .from(table)
+      .insert({ account_id: accountId, [titleField]: title, stage: pipelineStage });
+    if (pipelineError) throw new Error(pipelineError.message);
+
+    await promoteAccountOnSigned(accountId, pipelineStage);
+    revalidatePath("/pipeline");
+  }
 
   revalidatePath(`/accounts/${accountId}`);
 }

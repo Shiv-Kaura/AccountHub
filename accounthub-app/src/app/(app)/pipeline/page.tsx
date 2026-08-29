@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES, type Stage } from "@/lib/types";
 import type { Site, Account, Quote, Sow } from "@/lib/types";
-import { moveSiteStage, markSiteLost } from "../accounts/actions";
+import { moveSiteStage, markSiteLost, moveAccountStage, markAccountLost } from "../accounts/actions";
 import { updateQuoteStage, markQuoteLost } from "../quotes/actions";
 import { updateSowStage, markSowLost } from "../sows/actions";
 import { moveDealStage, markDealLost } from "./actions";
@@ -11,7 +11,7 @@ import { LostToggle, LostBadge } from "../lost-toggle";
 
 type PipelineCard = {
   id: string;
-  type: "site" | "quote" | "sow" | "deal";
+  type: "site" | "quote" | "sow" | "deal" | "prospect";
   stage: Stage;
   title: string;
   subtitle: string;
@@ -24,13 +24,14 @@ type PipelineCard = {
   lostFn: (lost: boolean) => Promise<void>;
 };
 
-type AccountMeta = Pick<Account, "id" | "name" | "segment" | "owner_name">;
+type AccountMeta = Pick<Account, "id" | "name" | "segment" | "owner_name" | "stage" | "lost">;
 
 const TYPE_LABEL: Record<PipelineCard["type"], string> = {
   site: "Facility",
   quote: "Quote",
   sow: "SOW",
   deal: "Quote + SOW",
+  prospect: "Prospect",
 };
 
 const TYPE_BADGE_CLASS: Record<PipelineCard["type"], string> = {
@@ -38,6 +39,7 @@ const TYPE_BADGE_CLASS: Record<PipelineCard["type"], string> = {
   quote: "bg-blue-50 text-blue-600",
   sow: "bg-violet-50 text-violet-600",
   deal: "bg-[#5b3a99]/10 text-[#3d1f6e]",
+  prospect: "bg-amber-50 text-amber-600",
 };
 
 function dealNamesMatch(a: string, b: string) {
@@ -57,7 +59,7 @@ export default async function PipelinePage({
   const supabase = await createClient();
   const [{ data: sites }, { data: accounts }, { data: quotes }, { data: sows }] = await Promise.all([
     supabase.from("sites").select("*").neq("stage", "Live"),
-    supabase.from("accounts").select("id, name, segment, owner_name"),
+    supabase.from("accounts").select("id, name, segment, owner_name, stage, lost"),
     supabase.from("quotes").select("*").neq("stage", "Live"),
     supabase.from("sows").select("*").neq("stage", "Live"),
   ]);
@@ -67,8 +69,10 @@ export default async function PipelinePage({
   const owners = Array.from(new Set(accountList.map((a) => a.owner_name).filter(Boolean))).sort();
 
   const siteList = (sites ?? []) as Site[];
-  const quoteList = (quotes ?? []) as Quote[];
-  const sowList = (sows ?? []) as Sow[];
+  // Quotes/SOWs can opt out of the pipeline (e.g. an upload that's just background info) — those
+  // still exist as normal records, just never generate a tile.
+  const quoteList = ((quotes ?? []) as Quote[]).filter((q) => q.track_pipeline);
+  const sowList = ((sows ?? []) as Sow[]).filter((s) => s.track_pipeline);
 
   // Pair up quotes and SOWs that belong to the same account, are in the same
   // stage, and share a name — these move through the pipeline together as
@@ -151,6 +155,29 @@ export default async function PipelinePage({
     })),
   ];
 
+  // A prospect with nothing attached yet — no facility, quote, or SOW — would otherwise be
+  // invisible on the pipeline. Give it a bare "Prospect" placeholder tile, tracked via the
+  // account's own stage, so it's trackable from day one. The moment a facility/quote/SOW shows
+  // up for that account (above), this placeholder stops being generated and the real tile takes
+  // its place.
+  const accountsWithPresence = new Set(cards.map((c) => c.accountId).filter(Boolean));
+  const prospectCards: PipelineCard[] = accountList
+    .filter((a) => a.segment === "prospect" && !accountsWithPresence.has(a.id) && a.stage !== "Live")
+    .map((a) => ({
+      id: `prospect-${a.id}`,
+      type: "prospect" as const,
+      stage: a.stage,
+      title: a.name,
+      subtitle: a.owner_name || "New prospect — no quote/SOW yet",
+      href: `/accounts/${a.id}`,
+      accountId: a.id,
+      lost: a.lost,
+      moveFn: moveAccountStage.bind(null, a.id),
+      lostFn: markAccountLost.bind(null, a.id),
+    }));
+
+  cards.push(...prospectCards);
+
   const filteredCards = cards.filter((c) => {
     if (!showLost && c.lost) return false;
     const meta = c.accountId ? accountById.get(c.accountId) : undefined;
@@ -163,10 +190,11 @@ export default async function PipelinePage({
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-semibold text-neutral-900">AM Pipeline</h1>
+      <h1 className="text-2xl font-semibold text-neutral-900">Pipeline</h1>
       <p className="mt-1 text-sm text-neutral-500">
-        Every facility being onboarded, quote, and SOW, grouped by stage. A quote and SOW for the same
-        deal are shown as one tile and move together.
+        Every prospect, facility being onboarded, quote, and SOW, grouped by stage. A quote and
+        SOW for the same deal are shown as one tile and move together; a prospect with nothing
+        attached yet still shows up so you can track it from day one.
       </p>
 
       <form

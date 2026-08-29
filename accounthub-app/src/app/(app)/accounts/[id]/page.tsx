@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { STAGES } from "@/lib/types";
 import type { Account, Site, Contact, AccountNote, Doc, Item } from "@/lib/types";
 import { uploadDoc } from "../actions";
 import { DocLink } from "./doc-link";
@@ -145,6 +146,26 @@ export default async function AccountDetailPage({
               </select>
             </div>
             <input type="file" name="file" accept="application/pdf,.pdf" required className="text-sm" />
+            <label className="flex items-center gap-1.5 text-xs text-neutral-600">
+              <input type="checkbox" name="trackPipeline" defaultChecked />
+              Track this on the pipeline
+            </label>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-600">
+                Pipeline stage (continues this account&apos;s current tile, if any)
+              </label>
+              <select
+                name="pipelineStage"
+                defaultValue={a.stage}
+                className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+              >
+                {STAGES.filter((s) => s !== "Live").map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               type="submit"
               className="self-start rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
