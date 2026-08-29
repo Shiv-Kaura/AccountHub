@@ -1,20 +1,22 @@
 export function healthDotClass(health: string) {
   switch (health) {
     case "green":
-      return "bg-emerald-500";
+      return "bg-[#1fae7a]"; // meadow-green
     case "yellow":
-      return "bg-amber-500";
+      return "bg-[#ffbc42]"; // sunflower-gold
     case "red":
-      return "bg-red-500";
+      return "bg-[#d81159]"; // raspberry-red
     default:
-      return "bg-neutral-300";
+      return "bg-white/30";
   }
 }
 
 export function itemStatusPillClass(status: string) {
   switch (status) {
     case "resolved":
-      return "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/25";
+      // meadow-green (#1fae7a) — the live/success color from the approved design
+      // system, not a stock Tailwind green, so it stays exact brand hex site-wide.
+      return "bg-[#1fae7a]/[0.12] text-[#3fd39c] ring-1 ring-[#1fae7a]/[0.3]";
     case "in_progress":
       return "bg-[#0496ff]/[0.12] text-[#4fc3ff] ring-1 ring-[#0496ff]/25";
     default:
@@ -43,7 +45,8 @@ export function daysInStageLabel(stageChangedAt: string): string {
 export function stagePillClass(stage: string) {
   switch (stage) {
     case "Live":
-      return "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/25";
+      // meadow-green (#1fae7a) — same live/success color as itemStatusPillClass
+      return "bg-[#1fae7a]/[0.12] text-[#3fd39c] ring-1 ring-[#1fae7a]/[0.3]";
     case "Signed":
     case "Assigned to PM/Work Session Scheduled":
       return "bg-[#0496ff]/[0.12] text-[#4fc3ff] ring-1 ring-[#0496ff]/25";

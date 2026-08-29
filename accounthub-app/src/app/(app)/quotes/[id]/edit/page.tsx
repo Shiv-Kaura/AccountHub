@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Quote } from "@/lib/types";
 import { QuoteForm } from "../../new/quote-form";
+import { GlassBanner } from "../../../glass-banner";
 
 export default async function EditQuotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,12 +16,15 @@ export default async function EditQuotePage({ params }: { params: Promise<{ id: 
   if (!quote) notFound();
 
   return (
-    <div className="p-8">
-      <Link href={`/quotes/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
-        &larr; Back to quote
-      </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-[#f2f2f4]">Edit quote</h1>
-      <QuoteForm accounts={accounts ?? []} quote={quote as Quote} />
+    <div className="relative min-h-screen">
+      <GlassBanner crumb="Quote Generator" title="Edit quote" showSearch={false} />
+      <div className="p-8">
+        <Link href={`/quotes/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
+          &larr; Back to quote
+        </Link>
+        <h1 className="mt-2 text-2xl font-semibold text-[#f7f7f8]">Edit quote</h1>
+        <QuoteForm accounts={accounts ?? []} quote={quote as Quote} />
+      </div>
     </div>
   );
 }

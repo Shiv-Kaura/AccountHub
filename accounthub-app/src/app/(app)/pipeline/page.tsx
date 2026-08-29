@@ -218,19 +218,10 @@ export default async function PipelinePage({
   const hasActiveFilters = Boolean(segmentFilter || ownerFilter || showLost);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0a0a0b] text-[#eceef0]">
-      {/* whisper of grain — the texture trick behind why dark material reads as material, not flat color */}
-      <svg className="absolute h-0 w-0">
-        <filter id="pipeline-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-          <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.4 0" />
-        </filter>
-      </svg>
-      <div className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay" style={{ filter: "url(#pipeline-grain)" }} />
-      <div
-        className="pointer-events-none absolute -top-[180px] -left-[120px] h-[420px] w-[640px]"
-        style={{ background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)" }}
-      />
+    <div className="relative min-h-screen text-[#eceef0]">
+      {/* Grain + color washes now come from the site-wide AmbientGlow in the app layout —
+          this page no longer needs its own (previously a plain white corner blob, an
+          earlier iteration superseded by the approved G-final system). */}
 
       {/* Top bar */}
       <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[rgba(20,20,22,0.62)] px-7 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_10px_28px_rgba(0,0,0,0.35)] backdrop-blur-[22px] backdrop-saturate-[140%]">

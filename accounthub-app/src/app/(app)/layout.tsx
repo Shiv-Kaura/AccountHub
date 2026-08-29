@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
 import { Toaster } from "./toaster";
+import { AmbientGlow } from "./ambient-glow";
+import { NavLinks } from "./nav-links";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -10,57 +12,31 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   } = await supabase.auth.getUser();
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-56 shrink-0 flex-col justify-between border-r border-white/[0.07] bg-white/[0.03] p-5">
+    <div className="relative flex min-h-screen">
+      {/* Approved "G — Layered Glow, final pass" background system — one instance, site-wide */}
+      <AmbientGlow />
+
+      <aside className="relative z-10 flex w-56 shrink-0 flex-col justify-between border-r border-white/[0.07] bg-white/[0.03] p-5">
         <div>
           <Link href="/">
-            <div className="text-base font-semibold text-[#4fc3ff]">AccountHub</div>
+            <div className="text-base font-semibold text-[#4fc3ff] [text-shadow:0_0_16px_rgba(79,195,255,0.35)]">
+              AccountHub
+            </div>
             <div className="mt-0.5 text-[11px] uppercase tracking-wide text-[#5a5d64]">
               Synthesis Health
             </div>
           </Link>
 
-          <form action="/search" className="mt-4">
+          <form action="/search" className="mt-4 flex items-center gap-2 rounded-md border border-white/[0.08] bg-white/[0.045] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
             <input
               name="q"
               type="search"
               placeholder="Search…"
-              className="w-full rounded-md border border-white/[0.10] px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0496ff]"
+              className="w-full bg-transparent text-sm focus:outline-none"
             />
           </form>
 
-          <nav className="mt-6 flex flex-col gap-1">
-            <Link
-              href="/"
-              className="rounded-md px-3 py-2 text-sm font-medium text-[#c7c9d0] hover:bg-[#0496ff]/[0.14] hover:text-[#4fc3ff]"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/accounts"
-              className="rounded-md px-3 py-2 text-sm font-medium text-[#c7c9d0] hover:bg-[#0496ff]/[0.14] hover:text-[#4fc3ff]"
-            >
-              Facility Groups
-            </Link>
-            <Link
-              href="/pipeline"
-              className="rounded-md px-3 py-2 text-sm font-medium text-[#c7c9d0] hover:bg-[#0496ff]/[0.14] hover:text-[#4fc3ff]"
-            >
-              Pipeline
-            </Link>
-            <Link
-              href="/sows"
-              className="rounded-md px-3 py-2 text-sm font-medium text-[#c7c9d0] hover:bg-[#0496ff]/[0.14] hover:text-[#4fc3ff]"
-            >
-              SOW Generator
-            </Link>
-            <Link
-              href="/quotes"
-              className="rounded-md px-3 py-2 text-sm font-medium text-[#c7c9d0] hover:bg-[#0496ff]/[0.14] hover:text-[#4fc3ff]"
-            >
-              Quote Generator
-            </Link>
-          </nav>
+          <NavLinks />
         </div>
         <div className="flex flex-col gap-2">
           {user && <div className="truncate text-xs text-[#5a5d64]">{user.email}</div>}
@@ -74,7 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </form>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 bg-[#0a0a0b]">{children}</main>
+      <main className="relative z-10 min-w-0 flex-1">{children}</main>
       <Toaster />
     </div>
   );

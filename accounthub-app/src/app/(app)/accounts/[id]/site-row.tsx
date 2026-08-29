@@ -14,7 +14,7 @@ export function SiteRow({ accountId, site }: { accountId: string; site: Site }) 
 
   if (!editing) {
     return (
-      <div className="flex items-center justify-between rounded-md border border-white/[0.05] px-3 py-2">
+      <div className="flex items-center justify-between rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2">
         <div>
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium text-[#e5e6ea]">{site.name}</div>

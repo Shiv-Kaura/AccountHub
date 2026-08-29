@@ -204,7 +204,7 @@ export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]
 
       <div>
         <div className="text-xs font-medium text-[#aeb1b8]">Rate card</div>
-        <div className="mt-2 flex flex-col divide-y divide-white/[0.06] rounded-md border border-white/[0.07]">
+        <div className="mt-2 flex flex-col divide-y divide-white/[0.06] rounded-md border border-white/[0.07] bg-white/[0.02]">
           {RATE_CARD.map((item) => {
             const qty = selected[item.key] ?? 0;
             const checked = qty > 0;

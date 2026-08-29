@@ -14,7 +14,7 @@ export function ItemRow({ accountId, item }: { accountId: string; item: Item }) 
 
   if (!editing) {
     return (
-      <div className="flex items-start justify-between gap-2 rounded-md border border-white/[0.05] px-3 py-2 text-sm">
+      <div className="flex items-start justify-between gap-2 rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <select

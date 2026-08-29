@@ -9,7 +9,7 @@ export function DocLink({ doc }: { doc: Doc }) {
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="flex items-center justify-between rounded-md border border-white/[0.05] px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm">
       <div>
         <button
           type="button"

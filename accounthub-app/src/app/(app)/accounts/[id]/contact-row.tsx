@@ -12,7 +12,7 @@ export function ContactRow({ accountId, contact }: { accountId: string; contact:
 
   if (!editing) {
     return (
-      <div className="flex items-start justify-between gap-2 rounded-md border border-white/[0.05] px-3 py-2 text-sm">
+      <div className="flex items-start justify-between gap-2 rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm">
         <div>
           <div className="font-medium text-[#e5e6ea]">
             {contact.name}

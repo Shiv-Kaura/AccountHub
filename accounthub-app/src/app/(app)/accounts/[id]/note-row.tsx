@@ -12,7 +12,7 @@ export function NoteRow({ accountId, note }: { accountId: string; note: AccountN
 
   if (!editing) {
     return (
-      <div className="rounded-md border border-white/[0.05] px-3 py-2 text-sm">
+      <div className="rounded-md border border-white/[0.05] bg-white/[0.02] px-3 py-2 text-sm">
         <div className="flex items-center justify-between">
           <div className="text-xs text-[#5a5d64]">{note.note_date}</div>
           <div className="flex gap-2">

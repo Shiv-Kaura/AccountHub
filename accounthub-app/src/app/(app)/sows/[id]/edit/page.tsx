@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Sow } from "@/lib/types";
 import { SowForm } from "../../new/sow-form";
+import { GlassBanner } from "../../../glass-banner";
 
 export default async function EditSowPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,12 +16,15 @@ export default async function EditSowPage({ params }: { params: Promise<{ id: st
   if (!sow) notFound();
 
   return (
-    <div className="p-8">
-      <Link href={`/sows/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
-        &larr; Back to SOW
-      </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-[#f2f2f4]">Edit SOW</h1>
-      <SowForm accounts={accounts ?? []} sow={sow as Sow} />
+    <div className="relative min-h-screen">
+      <GlassBanner crumb="SOW Generator" title="Edit SOW" showSearch={false} />
+      <div className="p-8">
+        <Link href={`/sows/${id}`} className="text-sm text-[#5a5d64] hover:text-[#c7c9d0]">
+          &larr; Back to SOW
+        </Link>
+        <h1 className="mt-2 text-2xl font-semibold text-[#f7f7f8]">Edit SOW</h1>
+        <SowForm accounts={accounts ?? []} sow={sow as Sow} />
+      </div>
     </div>
   );
 }
