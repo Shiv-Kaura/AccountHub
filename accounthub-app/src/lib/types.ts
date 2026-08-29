@@ -105,3 +105,25 @@ export type SowDraft = {
   workSummary: string;
   workDetails: string[];
 };
+
+export const ITEM_STATUSES = ["open", "in_progress", "resolved"] as const;
+export type ItemStatus = (typeof ITEM_STATUSES)[number];
+
+export const ITEM_STATUS_LABEL: Record<ItemStatus, string> = {
+  open: "Open",
+  in_progress: "In progress",
+  resolved: "Resolved",
+};
+
+export type Item = {
+  id: string;
+  account_id: string;
+  title: string;
+  status: ItemStatus;
+  priority: boolean;
+  owner: string;
+  due_date: string | null;
+  zendesk: string;
+  created_at: string;
+  updated_at: string;
+};

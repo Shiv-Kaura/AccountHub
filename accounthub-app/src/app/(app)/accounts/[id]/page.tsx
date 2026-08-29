@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { healthDotClass } from "@/lib/ui";
-import type { Account, Site, Contact, AccountNote, Doc } from "@/lib/types";
-import { addSite, addContact, addNote, uploadDoc } from "../actions";
+import type { Account, Site, Contact, AccountNote, Doc, Item } from "@/lib/types";
+import { addSite, addContact, addNote, uploadDoc, addItem } from "../actions";
 import { DocLink } from "./doc-link";
-import { StageSelect } from "./stage-select";
+import { AccountHeader } from "./account-edit";
+import { SiteRow } from "./site-row";
+import { ContactRow } from "./contact-row";
+import { NoteRow } from "./note-row";
+import { ItemRow } from "./item-row";
 
 export default async function AccountDetailPage({
   params,
@@ -15,13 +18,19 @@ export default async function AccountDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: account }, { data: sites }, { data: contacts }, { data: notes }, { data: docs }] =
+  const [{ data: account }, { data: sites }, { data: contacts }, { data: notes }, { data: docs }, { data: items }] =
     await Promise.all([
       supabase.from("accounts").select("*").eq("id", id).single(),
       supabase.from("sites").select("*").eq("account_id", id).order("name"),
       supabase.from("contacts").select("*").eq("account_id", id).order("name"),
       supabase.from("account_notes").select("*").eq("account_id", id).order("note_date", { ascending: false }),
       supabase.from("docs").select("*").eq("account_id", id).order("uploaded_at", { ascending: false }),
+      supabase
+        .from("items")
+        .select("*")
+        .eq("account_id", id)
+        .order("priority", { ascending: false })
+        .order("due_date", { ascending: true, nullsFirst: false }),
     ]);
 
   if (!account) notFound();
@@ -31,11 +40,13 @@ export default async function AccountDetailPage({
   const contactList = (contacts ?? []) as Contact[];
   const noteList = (notes ?? []) as AccountNote[];
   const docList = (docs ?? []) as Doc[];
+  const itemList = (items ?? []) as Item[];
 
   const addSiteWithId = addSite.bind(null, id);
   const addContactWithId = addContact.bind(null, id);
   const addNoteWithId = addNote.bind(null, id);
   const uploadDocWithId = uploadDoc.bind(null, id);
+  const addItemWithId = addItem.bind(null, id);
 
   return (
     <div className="p-8">
@@ -43,30 +54,60 @@ export default async function AccountDetailPage({
         &larr; All accounts / groups
       </Link>
 
-      <div className="mt-2 flex items-center gap-3">
-        <span className={`h-3 w-3 rounded-full ${healthDotClass(a.health)}`} />
-        <h1 className="text-2xl font-semibold text-neutral-900">{a.name}</h1>
-        <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
-          {a.segment === "managed" ? "Managed" : "Deal"}
-        </span>
-      </div>
+      <AccountHeader account={a} />
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Priority items */}
+        <section className="rounded-lg border border-neutral-200 p-5 lg:col-span-2">
+          <h2 className="font-medium text-neutral-900">Priority items</h2>
+          <div className="mt-3 flex flex-col gap-2">
+            {itemList.map((it) => (
+              <ItemRow key={it.id} accountId={id} item={it} />
+            ))}
+            {itemList.length === 0 && (
+              <p className="text-sm text-neutral-400">Nothing tracked yet — this account is quiet.</p>
+            )}
+          </div>
+          <form action={addItemWithId} className="mt-4 flex flex-wrap items-end gap-2">
+            <div className="flex flex-1 min-w-[180px] flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-600">What needs attention</label>
+              <input
+                name="title"
+                required
+                placeholder="e.g. Awaiting signed BAA"
+                className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-600">Owner</label>
+              <input name="owner" className="w-28 rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-600">Due</label>
+              <input name="dueDate" type="date" className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-600">Zendesk #</label>
+              <input name="zendesk" className="w-24 rounded-md border border-neutral-300 px-2 py-1.5 text-sm" />
+            </div>
+            <label className="flex items-center gap-1 pb-2 text-xs text-neutral-600">
+              <input type="checkbox" name="priority" /> High
+            </label>
+            <button
+              type="submit"
+              className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+            >
+              + Add
+            </button>
+          </form>
+        </section>
+
         {/* Sites */}
         <section className="rounded-lg border border-neutral-200 p-5">
           <h2 className="font-medium text-neutral-900">Facilities / sites</h2>
           <div className="mt-3 flex flex-col gap-2">
             {siteList.map((s) => (
-              <div
-                key={s.id}
-                className="flex items-center justify-between rounded-md border border-neutral-100 px-3 py-2"
-              >
-                <div>
-                  <div className="text-sm font-medium text-neutral-800">{s.name}</div>
-                  <div className="text-xs text-neutral-400">{s.location}</div>
-                </div>
-                <StageSelect accountId={id} siteId={s.id} stage={s.stage} />
-              </div>
+              <SiteRow key={s.id} accountId={id} site={s} />
             ))}
             {siteList.length === 0 && (
               <p className="text-sm text-neutral-400">No facilities yet.</p>
@@ -98,15 +139,7 @@ export default async function AccountDetailPage({
           <h2 className="font-medium text-neutral-900">Contacts</h2>
           <div className="mt-3 flex flex-col gap-2">
             {contactList.map((c) => (
-              <div key={c.id} className="rounded-md border border-neutral-100 px-3 py-2 text-sm">
-                <div className="font-medium text-neutral-800">
-                  {c.name}
-                  {c.role && <span className="ml-2 text-xs text-neutral-400">{c.role}</span>}
-                </div>
-                <div className="text-xs text-neutral-400">
-                  {[c.email, c.phone].filter(Boolean).join(" · ")}
-                </div>
-              </div>
+              <ContactRow key={c.id} accountId={id} contact={c} />
             ))}
             {contactList.length === 0 && (
               <p className="text-sm text-neutral-400">No contacts yet.</p>
@@ -157,10 +190,7 @@ export default async function AccountDetailPage({
           </form>
           <div className="mt-3 flex flex-col gap-2">
             {noteList.map((n) => (
-              <div key={n.id} className="rounded-md border border-neutral-100 px-3 py-2 text-sm">
-                <div className="text-xs text-neutral-400">{n.note_date}</div>
-                <div className="text-neutral-700">{n.body}</div>
-              </div>
+              <NoteRow key={n.id} accountId={id} note={n} />
             ))}
             {noteList.length === 0 && <p className="text-sm text-neutral-400">No notes yet.</p>}
           </div>

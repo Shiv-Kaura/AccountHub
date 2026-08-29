@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Quote } from "@/lib/types";
 import { formatPrice } from "@/lib/rate-card";
 import { DeleteQuoteButton } from "./delete-button";
+import { QuoteStageSelect } from "./quote-stage-select";
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,12 +28,19 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       <div className="mt-2 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{q.name}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            {q.customer} · {q.quote_date} · {q.stage}
-            {q.exhibit_label && ` · Exhibit ${q.exhibit_label}`}
-          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+            <span>{q.customer} · {q.quote_date}</span>
+            <QuoteStageSelect id={q.id} stage={q.stage} />
+            {q.exhibit_label && <span>Exhibit {q.exhibit_label}</span>}
+          </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={`/quotes/${q.id}/edit`}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+          >
+            Edit
+          </Link>
           <a
             href={`/quotes/${q.id}/export`}
             target="_blank"

@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { RATE_CARD, formatPrice, poRowFor, type PoRow } from "@/lib/rate-card";
-import { createQuote } from "../actions";
-import type { Account, Contact } from "@/lib/types";
+import { createQuote, updateQuote } from "../actions";
+import type { Account, Contact, Quote } from "@/lib/types";
 
 export type AccountWithContacts = Pick<Account, "id" | "name" | "contact"> & {
   contacts: Pick<Contact, "id" | "name" | "role" | "email" | "phone">[];
@@ -17,14 +17,23 @@ function contactEmailPhone(c: Pick<Contact, "email" | "phone">) {
   return [c.email, c.phone].filter(Boolean).join(" / ");
 }
 
-export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
-  const [selected, setSelected] = useState<Record<string, number>>({});
-  const [accountId, setAccountId] = useState("");
-  const [customer, setCustomer] = useState("");
-  const [synthesisContact, setSynthesisContact] = useState("Shiv Kaura");
-  const [synthesisEmailPhone, setSynthesisEmailPhone] = useState("");
-  const [customerContact, setCustomerContact] = useState("");
-  const [customerEmailPhone, setCustomerEmailPhone] = useState("");
+function rateSelToQty(rateSel: Quote["rate_sel"] | undefined): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [key, v] of Object.entries(rateSel || {})) {
+    if (v?.checked) out[key] = v.qty;
+  }
+  return out;
+}
+
+export function QuoteForm({ accounts, quote }: { accounts: AccountWithContacts[]; quote?: Quote }) {
+  const isEdit = Boolean(quote);
+  const [selected, setSelected] = useState<Record<string, number>>(() => rateSelToQty(quote?.rate_sel));
+  const [accountId, setAccountId] = useState(quote?.account_id ?? "");
+  const [customer, setCustomer] = useState(quote?.customer ?? "");
+  const [synthesisContact, setSynthesisContact] = useState(quote?.synthesis_contact ?? "Shiv Kaura");
+  const [synthesisEmailPhone, setSynthesisEmailPhone] = useState(quote?.synthesis_email_phone ?? "");
+  const [customerContact, setCustomerContact] = useState(quote?.customer_contact ?? "");
+  const [customerEmailPhone, setCustomerEmailPhone] = useState(quote?.customer_email_phone ?? "");
 
   const selectedAccount = accounts.find((a) => a.id === accountId) || null;
 
@@ -67,8 +76,10 @@ export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
     return sum + (Number.isFinite(n) ? n : 0);
   }, 0);
 
+  const action = isEdit ? updateQuote.bind(null, quote!.id) : createQuote;
+
   return (
-    <form action={createQuote} className="mt-6 flex flex-col gap-6">
+    <form action={action} className="mt-6 flex flex-col gap-6">
       <input type="hidden" name="rateSelJson" value={JSON.stringify(rateSel)} />
       <input type="hidden" name="poRowsJson" value={JSON.stringify(poRows)} />
 
@@ -78,6 +89,7 @@ export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
           <input
             name="name"
             required
+            defaultValue={quote?.name}
             placeholder="e.g. RASLO - VetMed HL7 Integration"
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
           />
@@ -114,6 +126,7 @@ export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
           <label className="text-xs font-medium text-neutral-600">Exhibit label</label>
           <input
             name="exhibitLabel"
+            defaultValue={quote?.exhibit_label}
             placeholder="e.g. A-1"
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
           />
@@ -183,6 +196,7 @@ export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
         <textarea
           name="implementationItems"
           rows={3}
+          defaultValue={quote?.implementation_items?.join("\n")}
           placeholder="Additional HL7 Interface with VetMed"
           className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
         />
@@ -263,7 +277,7 @@ export function QuoteForm({ accounts }: { accounts: AccountWithContacts[] }) {
         type="submit"
         className="self-start rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
       >
-        Create quote
+        {isEdit ? "Save changes" : "Create quote"}
       </button>
     </form>
   );

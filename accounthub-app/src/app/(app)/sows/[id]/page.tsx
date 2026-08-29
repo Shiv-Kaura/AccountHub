@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Sow } from "@/lib/types";
 import { DeleteSowButton } from "./delete-button";
+import { SowStageSelect } from "./sow-stage-select";
 
 export default async function SowDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,11 +22,18 @@ export default async function SowDetailPage({ params }: { params: Promise<{ id: 
       <div className="mt-2 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-neutral-900">{s.project_title}</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            {s.customer} · {s.sow_date} · {s.stage}
-          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+            <span>{s.customer} · {s.sow_date}</span>
+            <SowStageSelect id={s.id} stage={s.stage} />
+          </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={`/sows/${s.id}/edit`}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-50"
+          >
+            Edit
+          </Link>
           <a
             href={`/sows/${s.id}/export`}
             target="_blank"

@@ -112,7 +112,21 @@ create table sows (
   updated_at         timestamptz not null default now()
 );
 
+create table items (
+  id           text primary key default 'item_' || replace(gen_random_uuid()::text, '-', ''),
+  account_id   text not null references accounts(id) on delete cascade,
+  title        text not null,
+  status       text not null default 'open' check (status in ('open', 'in_progress', 'resolved')),
+  priority     boolean not null default false,
+  owner        text default '',
+  due_date     date,
+  zendesk      text default '',
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
 create index sites_account_id_idx on sites(account_id);
+create index items_account_id_idx on items(account_id);
 create index contacts_account_id_idx on contacts(account_id);
 create index account_notes_account_id_idx on account_notes(account_id);
 create index docs_account_id_idx on docs(account_id);
@@ -130,6 +144,7 @@ alter table account_notes enable row level security;
 alter table docs enable row level security;
 alter table quotes enable row level security;
 alter table sows enable row level security;
+alter table items enable row level security;
 
 create policy "authenticated read/write accounts" on accounts for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
@@ -144,6 +159,8 @@ create policy "authenticated read/write docs" on docs for all
 create policy "authenticated read/write quotes" on quotes for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 create policy "authenticated read/write sows" on sows for all
+  using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+create policy "authenticated read/write items" on items for all
   using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
 
 -- Storage bucket for uploaded PDFs.

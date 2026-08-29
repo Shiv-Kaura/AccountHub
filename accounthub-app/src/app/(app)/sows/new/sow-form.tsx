@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createSow } from "../actions";
+import { createSow, updateSow } from "../actions";
 import { draftSow } from "./draft-actions";
-import type { Account, Contact } from "@/lib/types";
+import type { Account, Contact, Sow } from "@/lib/types";
 
 export type AccountWithContacts = Pick<Account, "id" | "name" | "contact"> & {
   contacts: Pick<Contact, "id" | "name" | "role" | "email" | "phone">[];
@@ -17,14 +17,15 @@ function contactEmailPhone(c: Pick<Contact, "email" | "phone">) {
   return [c.email, c.phone].filter(Boolean).join(" / ");
 }
 
-export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
-  const [accountId, setAccountId] = useState("");
-  const [customer, setCustomer] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [contactEmailPhoneVal, setContactEmailPhoneVal] = useState("");
-  const [projectTitle, setProjectTitle] = useState("");
-  const [workSummary, setWorkSummary] = useState("");
-  const [workDetailsText, setWorkDetailsText] = useState("");
+export function SowForm({ accounts, sow }: { accounts: AccountWithContacts[]; sow?: Sow }) {
+  const isEdit = Boolean(sow);
+  const [accountId, setAccountId] = useState(sow?.account_id ?? "");
+  const [customer, setCustomer] = useState(sow?.customer ?? "");
+  const [contactName, setContactName] = useState(sow?.contact_name ?? "");
+  const [contactEmailPhoneVal, setContactEmailPhoneVal] = useState(sow?.contact_email_phone ?? "");
+  const [projectTitle, setProjectTitle] = useState(sow?.project_title ?? "");
+  const [workSummary, setWorkSummary] = useState(sow?.work_summary ?? "");
+  const [workDetailsText, setWorkDetailsText] = useState(sow?.work_details?.join("\n") ?? "");
 
   const [draftInput, setDraftInput] = useState("");
   const [draftError, setDraftError] = useState<string | null>(null);
@@ -64,8 +65,10 @@ export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
     if (match) setContactEmailPhoneVal(contactEmailPhone(match));
   }
 
+  const action = isEdit ? updateSow.bind(null, sow!.id) : createSow;
+
   return (
-    <form action={createSow} className="mt-6 flex max-w-2xl flex-col gap-4">
+    <form action={action} className="mt-6 flex max-w-2xl flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Project title</label>
@@ -108,7 +111,11 @@ export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-neutral-600">Address</label>
-          <input name="address" className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm" />
+          <input
+            name="address"
+            defaultValue={sow?.address}
+            className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          />
         </div>
       </div>
 
@@ -157,6 +164,7 @@ export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
         <textarea
           name="meetingNotes"
           rows={3}
+          defaultValue={sow?.meeting_notes}
           placeholder="What was discussed…"
           className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
         />
@@ -218,7 +226,7 @@ export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
       </div>
 
       <label className="flex items-center gap-2 text-sm text-neutral-600">
-        <input type="checkbox" name="solutionsDiagram" />
+        <input type="checkbox" name="solutionsDiagram" defaultChecked={sow?.solutions_diagram} />
         Include a solutions diagram
       </label>
 
@@ -226,7 +234,7 @@ export function SowForm({ accounts }: { accounts: AccountWithContacts[] }) {
         type="submit"
         className="self-start rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
       >
-        Create SOW
+        {isEdit ? "Save changes" : "Create SOW"}
       </button>
     </form>
   );

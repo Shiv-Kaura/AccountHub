@@ -11,6 +11,23 @@ export function healthDotClass(health: string) {
   }
 }
 
+export function itemStatusPillClass(status: string) {
+  switch (status) {
+    case "resolved":
+      return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200";
+    case "in_progress":
+      return "bg-blue-50 text-blue-700 ring-1 ring-blue-200";
+    default:
+      return "bg-amber-50 text-amber-700 ring-1 ring-amber-200";
+  }
+}
+
+export function isOverdue(due: string | null | undefined) {
+  if (!due) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return due < today;
+}
+
 export function stagePillClass(stage: string) {
   switch (stage) {
     case "Live":
