@@ -177,6 +177,26 @@ export async function updateAccount(accountId: string, formData: FormData) {
 
 export async function moveAccountStage(accountId: string, stage: string) {
   const supabase = await createClient();
+
+  // A bare prospect tile (nothing attached yet) that jumps straight to "Signed" would otherwise
+  // auto-promote to Managed and immediately vanish from the pipeline, with nothing left to track
+  // it through Assigned/Live — a confusing dead end for whoever moved it. Require something real
+  // attached before allowing that specific move; every other stage move is unaffected.
+  if (stage === "Signed") {
+    const [{ count: siteCount }, { count: quoteCount }, { count: sowCount }] = await Promise.all([
+      supabase.from("sites").select("id", { count: "exact", head: true }).eq("account_id", accountId),
+      supabase.from("quotes").select("id", { count: "exact", head: true }).eq("account_id", accountId),
+      supabase.from("sows").select("id", { count: "exact", head: true }).eq("account_id", accountId),
+    ]);
+    const hasAnythingAttached = (siteCount ?? 0) > 0 || (quoteCount ?? 0) > 0 || (sowCount ?? 0) > 0;
+    if (!hasAnythingAttached) {
+      throw new Error(
+        "Add a facility, quote, or SOW to this prospect before marking it Signed — a closed deal " +
+          "needs something attached to keep tracking through Assigned and Live."
+      );
+    }
+  }
+
   const { error } = await supabase
     .from("accounts")
     .update({ stage, stage_changed_at: new Date().toISOString() })
@@ -308,4 +328,56 @@ export async function getDocUrl(storagePath: string) {
     .createSignedUrl(storagePath, 60 * 10);
   if (error) throw new Error(error.message);
   return data.signedUrl;
+}
+
+// --- Customer portal (staff side) ---------------------------------------------------------
+// The customer-facing half of this lives in src/app/portal/[token]/actions.ts and uses its own
+// service-role client, since customers are never signed in. These are the ordinary,
+// session-scoped actions the staff app itself uses — same pattern as uploadDoc/getDocUrl above.
+
+export async function uploadPortalFile(accountId: string, formData: FormData) {
+  const file = formData.get("file") as File | null;
+  const note = String(formData.get("note") || "").trim();
+  if (!file || file.size === 0) return;
+
+  const supabase = await createClient();
+
+  const storagePath = `${accountId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const { error: uploadError } = await supabase.storage
+    .from("portal-files")
+    .upload(storagePath, file, { contentType: file.type || "application/octet-stream" });
+  if (uploadError) throw new Error(uploadError.message);
+
+  const { error } = await supabase.from("portal_files").insert({
+    account_id: accountId,
+    direction: "shared_with_customer",
+    file_name: file.name,
+    file_size: file.size,
+    storage_path: storagePath,
+    note,
+  });
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/accounts/${accountId}`);
+}
+
+export async function getPortalFileUrl(storagePath: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage
+    .from("portal-files")
+    .createSignedUrl(storagePath, 60 * 10);
+  if (error) throw new Error(error.message);
+  return data.signedUrl;
+}
+
+export async function deletePortalFile(accountId: string, fileId: string, storagePath: string) {
+  const supabase = await createClient();
+
+  const { error: storageError } = await supabase.storage.from("portal-files").remove([storagePath]);
+  if (storageError) throw new Error(storageError.message);
+
+  const { error } = await supabase.from("portal_files").delete().eq("id", fileId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/accounts/${accountId}`);
 }

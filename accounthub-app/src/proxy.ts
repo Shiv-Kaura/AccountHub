@@ -1,8 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the Supabase auth session on every request and gates everything except /login
-// behind a signed-in user — this is the piece the old artifact had no way to do at all.
+// Refreshes the Supabase auth session on every request and gates everything except /login and
+// /portal behind a signed-in user — this is the piece the old artifact had no way to do at all.
+// /portal is the customer-facing portal (src/app/portal/**), which is deliberately unauthenticated
+// — customers get in with a private per-account link (a portal_token), not a login. It does its
+// own access check server-side instead of going through Supabase Auth at all.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -30,8 +33,9 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isLoginPage = request.nextUrl.pathname.startsWith("/login");
+  const isPortalPage = request.nextUrl.pathname.startsWith("/portal");
 
-  if (!user && !isLoginPage) {
+  if (!user && !isLoginPage && !isPortalPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

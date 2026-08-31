@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { STAGES } from "@/lib/types";
-import type { Account, Site, Contact, AccountNote, Doc, Item } from "@/lib/types";
-import { uploadDoc } from "../actions";
+import type { Account, Site, Contact, AccountNote, Doc, Item, PortalFile } from "@/lib/types";
+import { uploadDoc, uploadPortalFile } from "../actions";
 import { DocLink } from "./doc-link";
 import { AccountHeader } from "./account-edit";
 import { SiteRow } from "./site-row";
@@ -14,6 +15,8 @@ import { AddSiteForm } from "./add-site-form";
 import { AddContactForm } from "./add-contact-form";
 import { AddNoteForm } from "./add-note-form";
 import { AddItemForm } from "./add-item-form";
+import { PortalLink } from "./portal-link";
+import { PortalFileRow } from "./portal-file-row";
 import { GlassBanner } from "../../glass-banner";
 
 export default async function AccountDetailPage({
@@ -24,20 +27,28 @@ export default async function AccountDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: account }, { data: sites }, { data: contacts }, { data: notes }, { data: docs }, { data: items }] =
-    await Promise.all([
-      supabase.from("accounts").select("*").eq("id", id).single(),
-      supabase.from("sites").select("*").eq("account_id", id).order("name"),
-      supabase.from("contacts").select("*").eq("account_id", id).order("name"),
-      supabase.from("account_notes").select("*").eq("account_id", id).order("note_date", { ascending: false }),
-      supabase.from("docs").select("*").eq("account_id", id).order("uploaded_at", { ascending: false }),
-      supabase
-        .from("items")
-        .select("*")
-        .eq("account_id", id)
-        .order("priority", { ascending: false })
-        .order("due_date", { ascending: true, nullsFirst: false }),
-    ]);
+  const [
+    { data: account },
+    { data: sites },
+    { data: contacts },
+    { data: notes },
+    { data: docs },
+    { data: items },
+    { data: portalFiles },
+  ] = await Promise.all([
+    supabase.from("accounts").select("*").eq("id", id).single(),
+    supabase.from("sites").select("*").eq("account_id", id).order("name"),
+    supabase.from("contacts").select("*").eq("account_id", id).order("name"),
+    supabase.from("account_notes").select("*").eq("account_id", id).order("note_date", { ascending: false }),
+    supabase.from("docs").select("*").eq("account_id", id).order("uploaded_at", { ascending: false }),
+    supabase
+      .from("items")
+      .select("*")
+      .eq("account_id", id)
+      .order("priority", { ascending: false })
+      .order("due_date", { ascending: true, nullsFirst: false }),
+    supabase.from("portal_files").select("*").eq("account_id", id).order("uploaded_at", { ascending: false }),
+  ]);
 
   if (!account) notFound();
 
@@ -47,8 +58,17 @@ export default async function AccountDetailPage({
   const noteList = (notes ?? []) as AccountNote[];
   const docList = (docs ?? []) as Doc[];
   const itemList = (items ?? []) as Item[];
+  const portalFileList = (portalFiles ?? []) as PortalFile[];
+  const sharedFiles = portalFileList.filter((f) => f.direction === "shared_with_customer");
+  const customerUploads = portalFileList.filter((f) => f.direction === "uploaded_by_customer");
 
   const uploadDocWithId = uploadDoc.bind(null, id);
+  const uploadPortalFileWithId = uploadPortalFile.bind(null, id);
+
+  // Vercel forwards the real public host in this header, so the link shown always matches
+  // whatever domain the site is actually reachable at — no separate "site URL" env var needed.
+  const host = (await headers()).get("host");
+  const portalUrl = `https://${host}/portal/${a.portal_token}`;
 
   return (
     <div className="relative min-h-screen">
@@ -177,6 +197,58 @@ export default async function AccountDetailPage({
               Upload
             </button>
           </form>
+        </section>
+
+        {/* Customer portal */}
+        <section className="rounded-[14px] border border-white/[0.06] bg-[#1c1c1e] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] lg:col-span-2">
+          <h2 className="font-medium text-[#f2f2f4]">Customer portal</h2>
+          <p className="mt-1 text-xs text-[#8c8f96]">
+            Share this link with the customer so they can pick up files (like the intake form) and
+            send things back — no login needed, only whoever has this exact link can see it.
+          </p>
+          <div className="mt-3">
+            <PortalLink portalUrl={portalUrl} />
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-medium text-[#c7c9d0]">Shared with customer</h3>
+              <div className="mt-2 flex flex-col gap-2">
+                {sharedFiles.map((f) => (
+                  <PortalFileRow key={f.id} accountId={id} file={f} canDelete />
+                ))}
+                {sharedFiles.length === 0 && (
+                  <p className="text-sm text-[#5a5d64]">Nothing shared yet.</p>
+                )}
+              </div>
+              <form action={uploadPortalFileWithId} className="mt-3 flex flex-col gap-2">
+                <input
+                  name="note"
+                  placeholder="What is this? (e.g. Intake form)"
+                  className="rounded-md border border-white/[0.10] px-2 py-1.5 text-sm"
+                />
+                <input type="file" name="file" required className="text-sm" />
+                <button
+                  type="submit"
+                  className="self-start rounded-md border border-white/[0.10] px-3 py-1.5 text-sm hover:bg-white/[0.05]"
+                >
+                  Share with customer
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-[#c7c9d0]">Sent back by customer</h3>
+              <div className="mt-2 flex flex-col gap-2">
+                {customerUploads.map((f) => (
+                  <PortalFileRow key={f.id} accountId={id} file={f} canDelete={false} />
+                ))}
+                {customerUploads.length === 0 && (
+                  <p className="text-sm text-[#5a5d64]">Nothing sent back yet.</p>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
       </div>
       </div>

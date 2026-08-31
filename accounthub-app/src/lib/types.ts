@@ -25,6 +25,20 @@ export type Account = {
   stage_changed_at: string;
   created_at: string;
   updated_at: string;
+  portal_token: string;
+};
+
+export type PortalFileDirection = "shared_with_customer" | "uploaded_by_customer";
+
+export type PortalFile = {
+  id: string;
+  account_id: string;
+  direction: PortalFileDirection;
+  file_name: string;
+  file_size: number | null;
+  storage_path: string;
+  note: string;
+  uploaded_at: string;
 };
 
 export type Site = {
