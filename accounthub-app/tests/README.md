@@ -8,7 +8,9 @@ a deploy.
 
 What it checks: Dashboard, Accounts list, an account detail page, Pipeline,
 Quotes list + new-quote form, SOWs list + new-SOW form, Search, and that a
-quote/SOW's PDF export actually returns a PDF.
+quote/SOW's export page renders correctly (it's a printable page you turn
+into a PDF yourself via the browser's print dialog — not a server-generated
+PDF file).
 
 ## One-time setup
 
