@@ -241,7 +241,15 @@ export default async function AccountDetailPage({
               <h3 className="text-sm font-medium text-[#c7c9d0]">Sent back by customer</h3>
               <div className="mt-2 flex flex-col gap-2">
                 {customerUploads.map((f) => (
-                  <PortalFileRow key={f.id} accountId={id} file={f} canDelete={false} />
+                  <PortalFileRow
+                    key={f.id}
+                    accountId={id}
+                    file={f}
+                    canDelete={false}
+                    canFile
+                    siteList={siteList}
+                    defaultStage={a.stage}
+                  />
                 ))}
                 {customerUploads.length === 0 && (
                   <p className="text-sm text-[#5a5d64]">Nothing sent back yet.</p>

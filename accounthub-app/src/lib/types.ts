@@ -39,6 +39,7 @@ export type PortalFile = {
   storage_path: string;
   note: string;
   uploaded_at: string;
+  filed_doc_id: string | null;
 };
 
 export type Site = {

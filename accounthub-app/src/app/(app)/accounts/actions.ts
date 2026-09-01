@@ -381,3 +381,75 @@ export async function deletePortalFile(accountId: string, fileId: string, storag
 
   revalidatePath(`/accounts/${accountId}`);
 }
+
+// Takes a file a customer already sent back through the portal and files it as a real account
+// document — same fields as the normal "Uploaded documents" upload (title, quote/SOW, facility,
+// optional pipeline tracking). The bytes are copied from the portal-files bucket into the docs
+// bucket rather than re-uploaded, since the customer already sent them once; the portal_files
+// row is then marked filed (filed_doc_id set) so the UI can show it's been dealt with.
+export async function filePortalFileAsDoc(accountId: string, portalFileId: string, formData: FormData) {
+  const title = String(formData.get("title") || "").trim();
+  const kind = String(formData.get("kind") || "quote");
+  const facilitySiteId = String(formData.get("facilitySiteId") || "") || null;
+  if (!title) return;
+
+  const trackPipeline = formData.get("trackPipeline") === "on";
+  const pipelineStage = String(formData.get("pipelineStage") || "Discovery");
+
+  const supabase = await createClient();
+
+  const { data: portalFile, error: portalFileError } = await supabase
+    .from("portal_files")
+    .select("*")
+    .eq("id", portalFileId)
+    .eq("account_id", accountId)
+    .single();
+  if (portalFileError || !portalFile) throw new Error("Couldn't find that file.");
+
+  const { data: fileBytes, error: downloadError } = await supabase.storage
+    .from("portal-files")
+    .download(portalFile.storage_path);
+  if (downloadError || !fileBytes) throw new Error(downloadError?.message || "Couldn't read that file.");
+
+  const storagePath = `${accountId}/${Date.now()}_${portalFile.file_name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const { error: uploadError } = await supabase.storage.from("docs").upload(storagePath, fileBytes, {
+    contentType: fileBytes.type || "application/octet-stream",
+  });
+  if (uploadError) throw new Error(uploadError.message);
+
+  const { data: doc, error } = await supabase
+    .from("docs")
+    .insert({
+      account_id: accountId,
+      kind,
+      title,
+      facility_site_id: facilitySiteId,
+      file_name: portalFile.file_name,
+      file_size: portalFile.file_size,
+      storage_path: storagePath,
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  // Same as uploadDoc: a bare filed doc doesn't need a pipeline row, but tracking it does.
+  if (trackPipeline) {
+    const table = kind === "sow" ? "sows" : "quotes";
+    const titleField = kind === "sow" ? "project_title" : "name";
+    const { error: pipelineError } = await supabase
+      .from(table)
+      .insert({ account_id: accountId, [titleField]: title, stage: pipelineStage });
+    if (pipelineError) throw new Error(pipelineError.message);
+
+    await promoteAccountOnSigned(accountId, pipelineStage);
+    revalidatePath("/pipeline");
+  }
+
+  const { error: markFiledError } = await supabase
+    .from("portal_files")
+    .update({ filed_doc_id: doc.id })
+    .eq("id", portalFileId);
+  if (markFiledError) throw new Error(markFiledError.message);
+
+  revalidatePath(`/accounts/${accountId}`);
+}
